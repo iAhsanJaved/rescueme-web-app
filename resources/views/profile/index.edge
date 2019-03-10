@@ -1,0 +1,53 @@
+@layout('layouts.app')
+
+@section('content')
+  @set('title', user.username)
+  @set('mainTitle', 'Profile')
+  @set('headerClass', 'col-lg-7')
+  @include('dashboard.partials.header')
+
+  <div class="container-fluid mt--7">
+    <div class="row justify-content-center">
+      <div class="col-md-6 order-xl-2 mb-5 mb-xl-0">
+        <div class="card card-profile shadow">
+          <div class="row justify-content-center">
+            <div class="col-lg-3 order-lg-2">
+              <div class="card-profile-image">
+                <img src="{{ auth.user.gender == 1 ? assetsUrl('/img/icons/user/man256x256.png') : assetsUrl('/img/icons/user/woman256x256.png') }}" class="rounded-circle">
+              </div>
+            </div>
+          </div>
+          <div class="card-header text-center border-0 pt-8 pt-md-4 pb-0 pb-md-4">
+            <div class="d-flex justify-content-between">
+            </div>
+          </div>
+          <div class="card-body pt-0 pt-md-4">
+            <div class="row">
+              <div class="col">
+                <div class="card-profile-stats d-flex justify-content-center mt-md-5">
+                  <div>
+                    <span class="heading">{{ user.name }}</span>
+                    <span class="description">{{ '@'+user.username }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="text-center">
+              <h3>
+                <span class="font-weight-light">{{ user.role.name }}</span>
+              </h3>
+              <div class="h4 font-weight-400">
+                <i class="fas fa-envelope text-yellow"></i> {{ user.email }}
+              </div>
+              <div class="h4 font-weight-400">
+                <i class="fas {{ user.gender == 1 ? 'fa-mars text-blue' : 'fa-venus text-pink' }}"></i> {{ user.gender == 1 ? 'Male' : 'Female' }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    @include('layouts.footers.auth')
+  </div>
+@endsection

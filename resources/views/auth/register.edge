@@ -1,0 +1,94 @@
+@layout('layouts.app')
+
+@section('content')
+  @set('title', 'Registration')
+  @set('bodyClass', 'bg-default')
+  @include('layouts.headers.guest')
+  <div class="container mt--8 pb-5">
+    <!-- Table -->
+    <div class="row justify-content-center">
+      <div class="col-lg-6 col-md-8">
+        <div class="card bg-secondary shadow border-0">
+          <div class="card-header bg-transparent pb-0">
+            <div class="text-center mt-2 mb-3">
+              <h2>Registration</h2>
+            </div>
+          </div>
+          <div class="card-body px-lg-5 py-lg-3">
+            <div class="text-center mb-3">
+              @if(flashMessage('registrationError'))
+                <span class="invalid-feedback" style="display: block;" role="alert">
+                  <strong>{{ flashMessage('registrationError') }}</strong>
+                </span>
+              @endif
+            </div>
+            <form role="form" method="POST" action="{{ route('register.store') }}">
+              {{ csrfField() }}
+              <div class="form-group{{ hasErrorFor('email') ? ' has-danger' : '' }}">
+                <div class="input-group input-group-alternative mb-3">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text"><i class="ni ni-email-83"></i></span>
+                  </div>
+                  <input class="form-control{{ hasErrorFor('email') ? ' is-invalid' : '' }}" placeholder="Email"
+                    type="email" name="email" value="{{ old('email', '') }}" required>
+                </div>
+                @if(hasErrorFor('email'))
+                <span class="invalid-feedback" style="display: block;" role="alert">
+                  <strong>{{ getErrorFor('email') }}</strong>
+                </span>
+                @endif
+              </div>
+              <div class="form-group{{ hasErrorFor('username') ? ' has-danger' : '' }}">
+                <div class="input-group input-group-alternative mb-3">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text"><i class="ni ni-single-02"></i></span>
+                  </div>
+                  <input class="form-control{{ hasErrorFor('username') ? ' is-invalid' : '' }}" placeholder="Username"
+                      type="text" name="username" value="{{ old('username', '') }}" required>
+                </div>
+                @if(hasErrorFor('username'))
+                  <span class="invalid-feedback" style="display: block;" role="alert">
+                    <strong>{{ getErrorFor('username') }}</strong>
+                  </span>
+                @endif
+              </div>
+              <div class="form-group{{ getErrorFor('password') ? ' has-danger' : '' }}">
+                <div class="input-group input-group-alternative">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text"><i class="ni ni-lock-circle-open"></i></span>
+                  </div>
+                  <input class="form-control{{ getErrorFor('password') ? ' is-invalid' : '' }}" placeholder="Password"
+                    type="password" name="password" required>
+                </div>
+                @if(getErrorFor('password'))
+                <span class="invalid-feedback" style="display: block;" role="alert">
+                  <strong>{{ getErrorFor('password') }}</strong>
+                </span>
+                @endif
+              </div>
+              {{--
+              <div class="text-muted font-italic">
+                <small>Password strength: <span class="text-success font-weight-700">Strong</span></small>
+              </div>
+              
+              <div class="row my-4">
+                <div class="col-12">
+                  <div class="custom-control custom-control-alternative custom-checkbox">
+                    <input class="custom-control-input" id="customCheckRegister" type="checkbox">
+                    <label class="custom-control-label" for="customCheckRegister">
+                      <span class="text-muted">I agree with the <a href="#!">Privacy Policy</a></span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+              --}}
+              <div class="text-center">
+                <button type="submit" class="btn btn-primary mt-4">Create account</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+@endsection

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {{-- Meta Information --}}
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    {{-- Title --}}
+    <title>{{ title ? title + ' | ': ''}}Face & Thumb Surveys</title>
+    
+    {{-- CSS --}}
+    <!-- Favicon -->
+    <link href="{{ assetsUrl('/img/brand/favicon.png') }}" rel="icon" type="image/png">
+    @section('css')
+    <!-- Fonts -->
+    {{ style('https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700') }}
+    <!-- Icons -->
+    {{ style('/vendor/nucleo/css/nucleo.css') }}
+    {{ style('/vendor/@fortawesome/fontawesome-free/css/all.min.css') }}
+    @endsection
+    <!-- Argon CSS -->
+    {{ style('/css/argon.css?v=1.0.0') }}
+  </head>
+  
+<body class="{{ bodyClass ? bodyClass : '' }}">
+    @loggedIn()
+      @include('layouts.navbars.sidebar')
+    @endloggedIn
+        
+    <div class="main-content">
+      @include('layouts.navbars.navbar')
+      @!section('content')
+    </div>
+
+    @loggedIn()
+
+    @else
+      @include('layouts.footers.guest')
+    @endloggedIn
+
+    {{-- Scripts --}}
+    @section('script')
+    {{ script('/vendor/jquery/dist/jquery.min.js') }}
+    {{ script('/vendor/bootstrap/dist/js/bootstrap.bundle.min.js') }}
+    @endsection
+    <!-- Argon JS -->
+    {{ script('/js/argon.js?v=1.0.0') }}
+    
+  </body>
+</html>

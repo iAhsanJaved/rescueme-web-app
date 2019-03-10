@@ -1,0 +1,106 @@
+@layout('layouts.app')
+
+@section('content')
+  @set('title', 'Edit Location')
+  @set('mainTitle', 'Locations')
+  @set('subtitle', 'Edit Location')
+  @include('dashboard.partials.header')
+
+  <div class="container-fluid mt--7">
+    <div class="row">
+      <div class="col-xl-12 order-xl-1">
+        <div class="card bg-secondary shadow">
+          <div class="card-header bg-white border-0">
+            <div class="row align-items-center">
+              <div class="col-8">
+                <h3 class="mb-0">{{ subtitle }}</h3>
+              </div>
+              <div class="col-4 text-right">
+                <a href="{{ route('locations.index') }}" class="btn btn-sm btn-primary">Back to list</a>
+              </div>
+            </div>
+            <div class="col-12">
+              @if(flashMessage('message'))
+                <div class="alert alert-success alert-dismissible fade show my-3" role="alert">
+                  {{ flashMessage('message') }}
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+              @endif
+            </div>
+          </div>
+          <div class="card-body">
+            <form method="POST" action="{{ route('locations.update', { id: location.id }) }}?_method=PUT" autocomplete="off">
+              {{ csrfField() }}
+
+              <div class="pl-lg-4">
+                @each(supportlang in location.organization.languagesSupport)
+                <div class="form-group{{ hasErrorFor('name') ? ' has-danger' : '' }}">
+                  <label class="form-control-label">Name in {{ supportlang.name }}</label>
+                  <input type="text" name="name[]" class="form-control form-control-alternative{{ hasErrorFor('name') ? ' is-invalid' : '' }}"
+                    placeholder="Name" 
+                    value="{{ getMatchedTranslation(location.languages, supportlang.id) ? (getMatchedTranslation(location.languages, supportlang.id)).pivot.name : '' }}" required autofocus>
+
+                  @if(hasErrorFor('name'))
+                  <span class="invalid-feedback" role="alert">
+                    <strong>{{ getErrorFor('name') }}</strong>
+                  </span>
+                  @endif
+                </div>
+                @endeach
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group{{ hasErrorFor('latitude') ? ' has-danger' : '' }}">
+                      <label class="form-control-label" for="input-latitude">Latitude</label>
+                      <input type="number" step="any" type="text" name="latitude" id="input-latitude" class="form-control form-control-alternative{{ hasErrorFor('latitude') ? ' is-invalid' : '' }}"
+                        placeholder="Latitude" value="{{ old('latitude', location.latitude) }}"  autofocus>
+    
+                      @if(hasErrorFor('latitude'))
+                      <span class="invalid-feedback" role="alert">
+                        <strong>{{ getErrorFor('latitude') }}</strong>
+                      </span>
+                      @endif
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group{{ hasErrorFor('longitude') ? ' has-danger' : '' }}">
+                      <label class="form-control-label" for="input-longitude">Longitude</label>
+                      <input type="number" step="any" name="longitude" id="input-longitude" class="form-control form-control-alternative{{ hasErrorFor('longitude') ? ' is-invalid' : '' }}"
+                        placeholder="Longitude" value="{{ old('longitude', location.longitude) }}"  autofocus>
+    
+                      @if(hasErrorFor('longitude'))
+                      <span class="invalid-feedback" role="alert">
+                        <strong>{{ getErrorFor('longitude') }}</strong>
+                      </span>
+                      @endif
+                    </div>
+                  </div>
+                </div>
+                
+
+                <div class="form-group{{ hasErrorFor('google_map_url') ? ' has-danger' : '' }}">
+                  <label class="form-control-label" for="input-google_map_url">Google Map URL</label>
+                  <input type="text" name="google_map_url" id="input-google_map_url" class="form-control form-control-alternative{{ hasErrorFor('google_map_url') ? ' is-invalid' : '' }}"
+                    placeholder="URL" value="{{ old('google_map_url', location.google_map_url) }}" autofocus>
+
+                  @if(hasErrorFor('google_map_url'))
+                  <span class="invalid-feedback" role="alert">
+                    <strong>{{ getErrorFor('google_map_url') }}</strong>
+                  </span>
+                  @endif
+                </div>
+
+                <div class="text-center">
+                  <button type="submit" class="btn btn-success mt-4">Update</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    @include('layouts.footers.auth')
+  </div>
+@endsection

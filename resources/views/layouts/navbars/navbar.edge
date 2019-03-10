@@ -1,0 +1,5 @@
+@loggedIn()
+  @include('layouts.navbars.navs.auth')
+@else
+  @include('layouts.navbars.navs.guest')
+@endloggedIn

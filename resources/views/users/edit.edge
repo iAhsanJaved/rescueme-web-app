@@ -1,0 +1,152 @@
+@layout('layouts.app')
+
+@section('content')
+  @set('title', 'Edit User')
+  @set('mainTitle', 'Users')
+  @set('subtitle', 'Edit User')
+  @include('dashboard.partials.header')
+
+  <div class="container-fluid mt--7">
+    <div class="row">
+      <div class="col-xl-12 order-xl-1">
+        <div class="card bg-secondary shadow">
+          <div class="card-header bg-white border-0">
+            <div class="row align-items-center">
+              <div class="col-8">
+                <h3 class="mb-0">{{ subtitle }}</h3>
+              </div>
+              <div class="col-4 text-right">
+                <a href="{{ route('users.index') }}" class="btn btn-sm btn-primary">Back to list</a>
+              </div>
+            </div>
+            <div class="col-12">
+              @if(flashMessage('message'))
+                <div class="alert alert-success alert-dismissible fade show my-3" role="alert">
+                  {{ flashMessage('message') }}
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+              @endif
+            </div>
+          </div>
+          <div class="card-body">
+            <form method="POST" action="{{ route('users.update', { id: user.id }) }}?_method=PUT" autocomplete="off">
+              {{ csrfField() }}
+
+              <div class="pl-lg-4">
+                <div class="form-group{{ hasErrorFor('name') ? ' has-danger' : '' }}">
+                  <label class="form-control-label" for="input-name">Name</label>
+                  <input type="text" name="name" id="input-name" class="form-control form-control-alternative{{ hasErrorFor('name') ? ' is-invalid' : '' }}"
+                    placeholder="Name" value="{{ old('name', user.name) }}" required autofocus>
+
+                  @if(hasErrorFor('name'))
+                  <span class="invalid-feedback" role="alert">
+                    <strong>{{ getErrorFor('name') }}</strong>
+                  </span>
+                  @endif
+                </div>
+                <div class="form-group{{ hasErrorFor('username') ? ' has-danger' : '' }}">
+                  <label class="form-control-label" for="input-username">Username</label>
+                  <input type="text" name="username" id="input-username" class="form-control form-control-alternative{{ hasErrorFor('username') ? ' is-invalid' : '' }}"
+                    placeholder="Username" value="{{ old('username', user.username) }}" required autofocus>
+
+                  @if(hasErrorFor('username'))
+                  <span class="invalid-feedback" role="alert">
+                    <strong>{{ getErrorFor('username') }}</strong>
+                  </span>
+                  @endif
+                </div>
+                <div class="form-group{{ hasErrorFor('email') ? ' has-danger' : '' }}">
+                  <label class="form-control-label" for="input-email">Email</label>
+                  <input type="email" name="email" id="input-email" class="form-control form-control-alternative{{ hasErrorFor('email') ? ' is-invalid' : '' }}"
+                    placeholder="Email" value="{{ old('email', user.email) }}" required>
+
+                  @if(hasErrorFor('email'))
+                  <span class="invalid-feedback" role="alert">
+                    <strong>{{ getErrorFor('email') }}</strong>
+                  </span>
+                  @endif
+                </div>
+
+                <div class="form-group{{ hasErrorFor('role_id') ? ' has-danger' : '' }}">
+                  <label class="form-control-label" for="input-role-id">User Role</label>
+                  <select name="role_id" class="form-control form-control-alternative{{ hasErrorFor('role_id') ? ' is-invalid' : '' }}" id="input-role-id" required>
+                    <option></option>
+                    @each(role in roles)
+                      <option value="{{ role.id }}" {{ old('role_id', user.role_id) == role.id ? 'selected' : '' }}>{{ role.name }}</option>
+                    @endeach
+                  </select>
+                  @if(hasErrorFor('role_id'))
+                  <span class="invalid-feedback" role="alert">
+                    <strong>{{ getErrorFor('role_id') }}</strong>
+                  </span>
+                  @endif
+                </div>
+
+                <div class="form-group{{ hasErrorFor('organization_id') ? ' has-danger' : '' }}">
+                  <label class="form-control-label-id" for="input-organization">Organization</label>
+                  <select name="organization_id" class="form-control form-control-alternative{{ hasErrorFor('organization_id') ? ' is-invalid' : '' }}" id="input-organization-id" required>
+                    <option></option>
+                    @each(organization in organizations)
+                      <option value="{{ organization.id }}" {{ old('organization_id', user.organization_id) == organization.id ? 'selected' : '' }}>
+                        {{ (getMatchedTranslation(organization.languages, "en")).pivot.name }}
+                      </option>
+                    @endeach
+                  </select>
+                  @if(hasErrorFor('organization_id'))
+                  <span class="invalid-feedback" role="alert">
+                    <strong>{{ getErrorFor('organization_id') }}</strong>
+                  </span>
+                  @endif
+                </div>
+
+                <div class="form-group{{ hasErrorFor('gender') ? ' has-danger' : '' }}">
+                  <label class="form-control-label">Gender</label>
+                  <br>
+                  <div class="custom-control custom-radio d-inline">
+                    <input name="gender" value="1" class="custom-control-input" id="radioBtn1" type="radio" {{ old('gender', user.gender) == 1 ? 'checked' : '' }} required>
+                    <label class="custom-control-label" for="radioBtn1">Male</label>
+                  </div>
+                  <div class="custom-control custom-radio d-inline ml-2">
+                    <input name="gender" value="0" class="custom-control-input" id="radioBtn2" type="radio" {{ old('gender', user.gender) == 0 ? 'checked' : '' }} required>
+                    <label class="custom-control-label" for="radioBtn2">Female</label>
+                  </div>
+                  @if(hasErrorFor('gender'))
+                  <span class="invalid-feedback" role="alert">
+                    <strong>{{ getErrorFor('gender') }}</strong>
+                  </span>
+                  @endif
+                </div>
+
+                <div class="form-group{{ hasErrorFor('status') ? ' has-danger' : '' }}">
+                  <label class="form-control-label">Status</label>
+                  <br>
+                  <div class="custom-control custom-radio d-inline">
+                    <input name="status" value="1" class="custom-control-input" id="radioBtn3" type="radio" {{ old('status', user.status) == 1 ? 'checked' : '' }} required>
+                    <label class="custom-control-label" for="radioBtn3">Enable</label>
+                  </div>
+                  <div class="custom-control custom-radio d-inline ml-2">
+                    <input name="status" value="0" class="custom-control-input" id="radioBtn4" type="radio" {{ old('status', user.status) == 0 ? 'checked' : '' }} required>
+                    <label class="custom-control-label" for="radioBtn4">Disable</label>
+                  </div>
+                  @if(hasErrorFor('status'))
+                  <span class="invalid-feedback" role="alert">
+                    <strong>{{ getErrorFor('status') }}</strong>
+                  </span>
+                  @endif
+                </div>
+
+                <div class="text-center">
+                  <button type="submit" class="btn btn-success mt-4">Update</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    @include('layouts.footers.auth')
+  </div>
+@endsection
