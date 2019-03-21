@@ -1,0 +1,193 @@
+@layout('layouts.app')
+
+@section('css')
+  @super
+  {{ style('https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css') }}
+@endsection
+
+@section('content')
+  @set('title', 'Add Survey Question')
+  @set('mainTitle', 'Survey Questions')
+  @set('subtitle', 'Add Survey Question')
+  @include('dashboard.partials.header')
+
+  <div class="container-fluid mt--7">
+    <div class="row">
+      <div class="col-xl-12 order-xl-1">
+        <div class="card bg-secondary shadow">
+          <div class="card-header bg-white border-0">
+            <div class="row align-items-center">
+              <div class="col-8">
+                <h3 class="mb-0">{{ subtitle }}</h3>
+              </div>
+              <div class="col-4 text-right">
+                <a href="{{ route('questions.index') }}" class="btn btn-sm btn-primary">Back to list</a>
+              </div>
+            </div>
+            <div class="col-12">
+              @if(flashMessage('message'))
+                <div class="alert alert-success alert-dismissible fade show my-3" role="alert">
+                  {{ flashMessage('message') }}
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+              @endif
+            </div>
+          </div>
+          <div class="card-body">
+            <form method="POST" id="createSurveyQuestionForm" action="{{ route('questions.store') }}" autocomplete="off">
+              {{ csrfField() }}
+              
+              <div class="pl-lg-4">
+                @if(count(organizations) == 1)
+                <input type="hidden" name="organization_id" value="organizations[0].id">
+                  {{-- Tenant Admin --}}
+                  @each(supportlang in organizations[0].languagesSupport)
+                  <div class="form-group{{ hasErrorFor('question') ? ' has-danger' : '' }}">
+                    <label class="form-control-label" >Question in {{ supportlang.name }}</label>
+                    <textarea type="text" name="question[]" class="form-control form-control-alternative"
+                        placeholder="Question" required  autofocus></textarea>
+    
+                    @if(hasErrorFor('question'))
+                      <span class="invalid-feedback" role="alert">
+                        <strong>{{ getErrorFor('question') }}</strong>
+                      </span>
+                    @endif
+                  </div>
+                  @endeach
+
+                  <div class="form-group{{ hasErrorFor('device') ? ' has-danger' : '' }}">
+                    <label class="form-control-label" for="input-name">Devices</label>
+                    @each(device in organizations[0].devices)
+                    <div class="custom-control custom-checkbox mb-3">
+                      <input name="device[]" class="custom-control-input" id="customCheck{{ device.id }}" 
+                        value="{{ device.id }}" type="checkbox"  >
+                      <label class="custom-control-label" for="customCheck{{ device.id }}">{{ (getMatchedTranslation(device.languages, "en")).pivot.name }}</label>
+                    </div>
+                    @endeach
+
+                    @if(hasErrorFor('device'))
+                    <span class="invalid-feedback" role="alert">
+                      <strong>{{ getErrorFor('device') }}</strong>
+                    </span>
+                    @endif
+                  </div>
+
+                @else
+                  {{-- Super Admin --}}
+                  <div class="form-group{{ hasErrorFor('organization_id') ? ' has-danger' : '' }}">
+                    <label class="form-control-label" for="input-organization-select">Organization</label>
+                    <select name="organization_id" class="form-control form-control-alternative{{ hasErrorFor('organization_id') ? ' is-invalid' : '' }}" id="input-organization-select" required>
+                      <option data-supportlangs="" data-supportlangs-id="" data-devices-id="" data-devices=""></option>
+                      @each(organization in organizations)
+                      <option value="{{ organization.id }}" data-supportlangs-id="{{ printSupportedLanguagesID(organization.languagesSupport) }}"
+                      data-supportlangs="{{ printSupportedLanguages(organization.languagesSupport) }}"
+                      data-devices-id="{{ printObjectID(organization.devices) }}"
+                      data-devices="{{ printObjectName(organization.devices, '$') }}"
+                      {{ old('organization_id') == organization.id ? 'selected' : '' }}>
+                          {{ (getMatchedTranslation(organization.languages, "en")).pivot.name }}
+                        </option>
+                      @endeach
+                    </select>
+                    @if(hasErrorFor('organization_id'))
+                    <span class="invalid-feedback" role="alert">
+                      <strong>{{ getErrorFor('organization_id') }}</strong>
+                    </span>
+                    @endif
+                  </div>
+
+                  <div id="dynamic-inputs">
+
+                  </div>
+                @endif
+
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group{{ hasErrorFor('rating_type') ? ' has-danger' : '' }}">
+                      <label class="form-control-label">Rating Type</label>
+                      <br>
+                      <div class="custom-control custom-radio d-inline">
+                        <input name="rating_type" value="1" class="custom-control-input" id="radioBtn1" 
+                        type="radio" {{ old('rating_type', '') == 1 ? 'checked' : '' }} required>
+                        <label class="custom-control-label" for="radioBtn1">Face</label>
+                      </div>
+                      <div class="custom-control custom-radio d-inline ml-2">
+                        <input name="rating_type" value="0" class="custom-control-input" id="radioBtn2" 
+                        type="radio" {{ old('rating_type', 1) == 0 ? 'checked' : '' }} required>
+                        <label class="custom-control-label" for="radioBtn2">Thumb</label>
+                      </div>
+                      @if(hasErrorFor('rating_type'))
+                      <span class="invalid-feedback" role="alert">
+                        <strong>{{ getErrorFor('rating_type') }}</strong>
+                      </span>
+                      @endif
+                    </div>
+                  </div>
+                  
+                  <div class="col-md-6">
+                    <div class="form-group{{ hasErrorFor('status') ? ' has-danger' : '' }}">
+                      <label class="form-control-label">Status</label>
+                      <br>
+                      <div class="custom-control custom-radio d-inline">
+                        <input name="status" value="1" class="custom-control-input" id="radioBtn3" 
+                        type="radio" {{ old('status', '') == 1 ? 'checked' : '' }} required>
+                        <label class="custom-control-label" for="radioBtn3">Enable</label>
+                      </div>
+                      <div class="custom-control custom-radio d-inline ml-2">
+                        <input name="status" value="0" class="custom-control-input" id="radioBtn4" 
+                        type="radio" {{ old('status', 1) == 0 ? 'checked' : '' }} required>
+                        <label class="custom-control-label" for="radioBtn4">Disable</label>
+                      </div>
+                      @if(hasErrorFor('status'))
+                      <span class="invalid-feedback" role="alert">
+                        <strong>{{ getErrorFor('status') }}</strong>
+                      </span>
+                      @endif
+                    </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <div class="form-group{{ hasErrorFor('expire_at') ? ' has-danger' : '' }}">
+                      <label class="form-control-label" for="input-expire_at">Expire At</label>
+                      <div class="input-group date" id="datetimepicker" data-target-input="nearest">
+                        <input name="expire_at" type="text" value="{{ old('expire_at', '') }}" class="form-control datetimepicker-input" data-target="#datetimepicker" required autofocus/>
+                        <div class="input-group-append" data-target="#datetimepicker" data-toggle="datetimepicker">
+                          <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                        </div>
+                      </div>
+
+                      @if(hasErrorFor('expire_at'))
+                      <span class="invalid-feedback" role="alert">
+                        <strong>{{ getErrorFor('expire_at') }}</strong>
+                      </span>
+                      @endif
+                    </div>
+                  </div>
+
+                </div>
+                
+
+                
+                
+                <div class="text-center">
+                  <button type="submit" class="btn btn-success mt-4">Save</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    @include('layouts.footers.auth')
+  </div>
+@endsection
+
+
+@section('script')
+  @super
+  {{ script('https://cdn.jsdelivr.net/momentjs/latest/moment.min.js') }}
+  {{ script('https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js') }}
+  {{ script('/js/form.js') }}
+@endsection

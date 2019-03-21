@@ -1,36 +1,36 @@
 'use strict'
 
-const Location = use('App/Models/Location')
 const Organization = use('App/Models/Organization')
+const SurveyQuestion = use('App/Models/SurveyQuestion')
 
-class LocationController {
+class SurveyQuestionController {
 
     async index ({ view, auth }) {
         // Get Role of Authenticated User
         const user_role = ((await auth.user.role().fetch()).toJSON()).slug;
         
-        let locations;
+        let survey_questions;
         if(user_role == 'super_admin') {
-            // Fetch all Locations with 'en' Language
-            locations = await Location.query()
-            .with('organization.languages')
+            // Fetch all SurveyQuestions with 'en' Language
+            survey_questions = await SurveyQuestion.query()
+            .with('devices.languages')
             .with('languages', (builder) => {
                 builder.where('language_id', '=','en')
             }).fetch()
         } else {
-            // Fetch Locations with 'en' Language 
-            // (organization_id of Locations must be equal to Authenticated User's organization_id)
-            locations = await Location.query()
+            // Fetch SurveyQuestions with 'en' Language 
+            // (organization_id of SurveyQuestions must be equal to Authenticated User's organization_id)
+            survey_questions = await SurveyQuestion.query()
             .where('organization_id', '=', auth.user.organization_id)
-            .with('organization.languages')
+            .with('devices.languages')
             .with('languages', (builder) => {
-                builder.where('language_id', '=', 'en')
+                builder.where('language_id', '=','en')
             }).fetch()
         }
 
         // Response
-        return view.render('locations.index', { 
-            locations: locations.toJSON() 
+        return view.render('questions.index', { 
+            survey_questions: survey_questions.toJSON() 
         });
     }
   
@@ -42,6 +42,7 @@ class LocationController {
         if(user_role == 'super_admin') {
             // Fetch all Organizations with Languages they support(translation)
             organizations = await Organization.query()
+            .with('devices.languages')
             .with('languages').with('languagesSupport').fetch()
 
         } else {
@@ -49,12 +50,13 @@ class LocationController {
             // (organization_id of organization must be equal to Authenticated User's organization_id) 
             organizations = await Organization.query()
             .where('id', '=', auth.user.organization_id)
+            .with('devices.languages')
             .with('languages').with('languagesSupport').fetch()
         }
         
         
         // Response
-        return view.render('locations.create', { 
+        return view.render('questions.create', { 
             organizations: organizations.toJSON() 
         });
     }
@@ -64,149 +66,144 @@ class LocationController {
         const user_role = ((await auth.user.role().fetch()).toJSON()).slug;
         // Request Data
         const data = request.only([
-            'name', 'latitude', 'longitude', 'google_map_url', 'organization_id'
+            'question', 'device', 'rating_type', 'status', 'expire_at', 'organization_id'
         ])
 
         if(user_role != 'super_admin') {
             data.organization_id = auth.user.organization_id;
         }
 
-        // Create Location
-        const location = await Location.create({
-            latitude: data.latitude,
-            longitude: data.longitude,
-            google_map_url: data.google_map_url,
+        // Create Survey Question
+        const survey_question = await SurveyQuestion.create({
+            rating_type: data.rating_type,
+            status: data.status,
+            expire_at: data.expire_at,
             organization_id: data.organization_id
         })
 
         // Fetch Organization
-        const organization = await Organization.findOrFail(location.organization_id)
+        const organization = await Organization.findOrFail(survey_question.organization_id)
         const supportLangs = (await organization.languagesSupport().fetch()).toJSON()
 
-        for(var i=0; i<data.name.length; i++) {
-            await location.languages().attach([supportLangs[i].id], (row) => {
-                row.name = data.name[i]
+        for(var i=0; i<data.question.length; i++) {
+            await survey_question.languages().attach([supportLangs[i].id], (row) => {
+                row.question = data.question[i]
             })
         }
 
+        await survey_question.devices().attach(data.device)
+
         // Response
-		session.flash({ message: 'Location has been added.' });
+		session.flash({ message: 'Survey Question has been added.' });
 		return response.redirect('back');
     }
 
     async show({ params, view, auth, request }) {
         // Get Role of Authenticated User
         const user_role = ((await auth.user.role().fetch()).toJSON()).slug;
-        // Find Location
-        const location = await Location.findOrFail(params.id)
+        // Find Survey Question
+        const survey_question = await SurveyQuestion.findOrFail(params.id)
         
         if(user_role != 'super_admin' 
-            && location.organization_id != auth.user.organization_id) {
+            && survey_question.organization_id != auth.user.organization_id) {
             // Exception Response
             return view.render('exceptions.unauthorization', { url: request.url() });
         }
-        // Load Languages to Location 
-        await location.load('languages')
         
-        // Fetch Organization
-        const organization = await location.organization().fetch()
-        await organization.load('languages')
+        // Load Languages, Devices, Organization to Survey Question 
+        await survey_question.loadMany(['languages', 'devices.languages', 'organization.languages'])
         
-        // Attach Organization to Location 
-        location.organization = organization.toJSON()
         // Response
-        return view.render('locations.show', { 
-            location: location.toJSON() 
+        return view.render('questions.show', { 
+            survey_question: survey_question.toJSON() 
         });
     }
 
     async edit({ params, view, auth, request }) {
         // Get Role of Authenticated User
         const user_role = ((await auth.user.role().fetch()).toJSON()).slug;
-        // Find Location
-        const location = await Location.findOrFail(params.id)
+        // Find Survey Question
+        const survey_question = await SurveyQuestion.findOrFail(params.id)
         
         if(user_role != 'super_admin' 
-            && location.organization_id != auth.user.organization_id) {
+            && survey_question.organization_id != auth.user.organization_id) {
             // Exception Response
             return view.render('exceptions.unauthorization', { url: request.url() });
         }
         
-        // Load Languages to Location 
-        await location.load('languages')
-
-        // Fetch Organization
-        const organization = await Organization.findOrFail(location.organization_id)
-        await organization.loadMany(['languages', 'languagesSupport'])
-        // Attach Organization to Location 
-        location.organization = organization.toJSON()
+        // Load Languages, Devices, Organization to Survey Question 
+        await survey_question.loadMany([
+            'languages', 'devices', 
+            'organization.languages', 'organization.languagesSupport',
+            'organization.devices.languages',
+        ])
 
         // Response
-        return view.render('locations.edit', { 
-            location: location.toJSON()
+        return view.render('questions.edit', { 
+            survey_question: survey_question.toJSON()
         });
     }
 
     async update({ params, response, request, session, auth }) {
         // Get Role of Authenticated User
         const user_role = ((await auth.user.role().fetch()).toJSON()).slug;
-        // Find Location
-        const location = await Location.findOrFail(params.id)
+        // Find Survey Question
+        const survey_question = await SurveyQuestion.findOrFail(params.id)
         
         if(user_role != 'super_admin' 
-            && location.organization_id != auth.user.organization_id) {
+            && survey_question.organization_id != auth.user.organization_id) {
             // Exception Response
             return view.render('exceptions.unauthorization', { url: request.url() });
         }
 
         // Request Data
         const data = request.only([
-            'name', 'latitude', 'longitude', 'google_map_url'
+            'question', 'device', 'rating_type', 'status', 'expire_at'
         ])
+
         
         // Fetch Organization
-        const organization = await Organization.findOrFail(location.organization_id)
+        const organization = await Organization.findOrFail(survey_question.organization_id)
         // Fetch Supported Languages array ['en', 'ar']
         const supportLangs = (await organization.languagesSupport().fetch()).toJSON()
         
-        console.log(location);
-        console.log(supportLangs)
-        await location.languages().detach()
-        for(var i=0; i<data.name.length; i++) {
-            await location.languages().attach([supportLangs[i].id], (row) => {
-                row.name = data.name[i]
+        await survey_question.languages().detach()
+        for(var i=0; i<data.question.length; i++) {
+            await survey_question.languages().attach([supportLangs[i].id], (row) => {
+                row.question = data.question[i]
             })
         }
         
-        // Update Location 
-        location.latitude = data.latitude
-        location.longitude = data.longitude
-        location.google_map_url = data.google_map_url
-        await location.save()
+        await survey_question.devices().sync(data.device)
+
+        // Update Survey Question  
+        survey_question.rating_type = data.rating_type
+        survey_question.status = data.status
+        survey_question.expire_at = data.expire_at
+        await survey_question.save()
         // Response
-		session.flash({ message: 'Location has been updated.' });
+		session.flash({ message: 'Survey Question has been updated.' });
 		return response.redirect('back');
     }
 
     async destroy({ params, response, session, auth, request, view }) {
         // Get Role of Authenticated User
         const user_role = ((await auth.user.role().fetch()).toJSON()).slug;
-        // Find Location
-        const location = await Location.findOrFail(params.id);
+        // Find Survey Question
+        const survey_question = await SurveyQuestion.findOrFail(params.id)
         
         if(user_role != 'super_admin' 
-            && location.organization_id != auth.user.organization_id) {
+            && survey_question.organization_id != auth.user.organization_id) {
             // Exception Response
             return view.render('exceptions.unauthorization', { url: request.url() });
         }
         
-        // Delete Location
-		await location.delete();
+        // Delete Survey Question
+		await survey_question.delete();
         // Response
-		session.flash({ message: 'Location has been deleted.' });
+		session.flash({ message: 'Survey Question has been deleted.' });
 		return response.redirect('back');
     }
-    
 }
 
-module.exports = LocationController
+module.exports = SurveyQuestionController

@@ -16,6 +16,17 @@ class Device extends Model {
           .withTimestamps()
     }
 
+    organization () {
+        return this.belongsTo('App/Models/Organization')
+    }
+    
+    survey_questions () {
+        return this
+          .belongsToMany('App/Models/Device', 'device_id', 'survey_question_id', 'id', 'id' )
+          .pivotTable('survey_question_devices')
+          .withTimestamps()
+    }
+
     static get incrementing () {
         return false
     }

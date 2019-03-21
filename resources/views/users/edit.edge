@@ -85,7 +85,7 @@
                 </div>
 
                 <div class="form-group{{ hasErrorFor('organization_id') ? ' has-danger' : '' }}">
-                  <label class="form-control-label-id" for="input-organization">Organization</label>
+                  <label class="form-control-label" for="input-organization">Organization</label>
                   <select name="organization_id" class="form-control form-control-alternative{{ hasErrorFor('organization_id') ? ' is-invalid' : '' }}" id="input-organization-id" required>
                     <option></option>
                     @each(organization in organizations)

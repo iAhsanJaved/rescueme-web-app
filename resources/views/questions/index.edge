@@ -6,9 +6,9 @@
 @endsection
 
 @section('content')
-  @set('title', 'Location Management')
-  @set('mainTitle', 'Locations')
-  @set('subtitle', 'Location Management')
+  @set('title', 'Survey Question Management')
+  @set('mainTitle', 'Survey Questions')
+  @set('subtitle', 'Survey Question Management')
   @include('dashboard.partials.header')
   
   <div class="container-fluid mt--7">
@@ -21,7 +21,7 @@
                 <h3 class="mb-0">{{ subtitle }}</h3>
               </div>
               <div class="col-4 text-right">
-                <a href="{{ route('locations.create') }}" class="btn btn-sm btn-primary">Add location</a>
+                <a href="{{ route('questions.create') }}" class="btn btn-sm btn-primary">Add survey question</a>
               </div>
             </div>
           </div>
@@ -41,31 +41,31 @@
             <table id="dataTable" class="table align-items-center table-flush">
               <thead class="thead-light">
                 <tr>
-                  <th scope="col">Name</th>
-                  <th scope="col">Latitude</th>
-                  <th scope="col">Longitude</th>
-                  <th scope="col">Organization</th>
+                  <th scope="col">Question</th>
+                  <th scope="col">Expire At</th>
+                  <th scope="col">Rating Type</th>
+                  <th scope="col">Devices</th>
                   <th scope="col" class="text-right">Action</th>
                 </tr>
               </thead>
               <tbody>
-                @each(location in locations)
+                @each(survey_question in survey_questions)
                 <tr>
-                  <td>{{ (getMatchedTranslation(location.languages, "en")).pivot.name }}</td>
-                  <td>{{ location.latitude }}</td>
-                  <td>{{ location.longitude }}</td>
-                  <td>{{ (getMatchedTranslation(location.organization.languages, "en")).pivot.name }}</td>
+                  <td>{{ (getMatchedTranslation(survey_question.languages, "en")).pivot.question }}</td>
+                  <td>{{ convertToDateTime(survey_question.expire_at) }}</td>
+                  <td>{{ survey_question.rating_type == 1 ? 'Face' : 'Thumb' }}</td>
+                  <td>{{ printObjectName(survey_question.devices, ', ') }}</td>
                   <td class="text-right">
-                    <a class="btn btn-round btn-info btn-icon btn-sm view" data-toggle="tooltip" data-placement="bottom" title="{{ 'View Location' }}" href="{{ route('locations.show', { id: location.id }) }}">
+                    <a class="btn btn-round btn-info btn-icon btn-sm view" data-toggle="tooltip" data-placement="bottom" title="{{ 'View Survey Question' }}" href="{{ route('questions.show', { id: survey_question.id }) }}">
                       <i class="fas fa-eye"></i>
                     </a>
-                    <a class="btn btn-round btn-warning btn-icon btn-sm edit" data-toggle="tooltip" data-placement="bottom" title="{{ 'Edit Location' }}" href="{{ route('locations.edit', { id: location.id }) }}">
+                    <a class="btn btn-round btn-warning btn-icon btn-sm edit" data-toggle="tooltip" data-placement="bottom" title="{{ 'Edit Survey Question' }}" href="{{ route('questions.edit', { id: survey_question.id }) }}">
                       <i class="fas fa-edit"></i>
                     </a>
                     
-                      <form action="{{ route('locations.destroy', { id: location.id }) }}?_method=delete" method="post" class="d-inline">
+                      <form action="{{ route('questions.destroy', { id: survey_question.id }) }}?_method=delete" method="post" class="d-inline">
                         {{ csrfField() }}
-                        <button type="button" class="btn btn-round btn-danger btn-icon btn-sm remove" data-toggle="tooltip" data-placement="bottom" title="{{ 'Delete Location' }}" onclick="confirm('Are you sure you want to delete this location?') ? this.parentElement.submit() : ''">
+                        <button type="button" class="btn btn-round btn-danger btn-icon btn-sm remove" data-toggle="tooltip" data-placement="bottom" title="{{ 'Delete Survey Question' }}" onclick="confirm('Are you sure you want to delete this survey question?') ? this.parentElement.submit() : ''">
                           <i class="fas fa-times"></i>
                         </button>
                       </form>

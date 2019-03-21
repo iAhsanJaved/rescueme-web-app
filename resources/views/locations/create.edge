@@ -31,33 +31,52 @@
             </div>
           </div>
           <div class="card-body">
-            <form method="POST" action="{{ route('locations.store') }}" autocomplete="off">
+            <form method="POST" id="createLocationForm" action="{{ route('locations.store') }}" autocomplete="off">
               {{ csrfField() }}
-
+              
               <div class="pl-lg-4">
-                <div class="form-group{{ hasErrorFor('organization_id') ? ' has-danger' : '' }}">
-                  <label class="form-control-label" for="input-organization-select">Organization</label>
-                  <select name="organization_id" class="form-control form-control-alternative{{ hasErrorFor('organization_id') ? ' is-invalid' : '' }}" id="input-organization-select" required>
-                    <option data-supportlangs="" data-supportlangs-id=""></option>
-                    @each(organization in organizations)
-                    <option value="{{ organization.id }}" data-supportlangs-id="{{ printSupportedLanguagesID(organization.languagesSupport) }}"
-                    data-supportlangs="{{ printSupportedLanguages(organization.languagesSupport) }}"
-                      {{ old('organization_id') == organization.id ? 'selected' : '' }}>
-                        {{ (getMatchedTranslation(organization.languages, "en")).pivot.name }}
-                      </option>
-                    @endeach
-                  </select>
-                  @if(hasErrorFor('organization_id'))
-                  <span class="invalid-feedback" role="alert">
-                    <strong>{{ getErrorFor('organization_id') }}</strong>
-                  </span>
-                  @endif
-                </div>
+                @if(count(organizations) == 1)
+                <input type="hidden" name="organization_id" value="organizations[0].id">
+                  {{-- Tenant Admin --}}
+                  @each(supportlang in organizations[0].languagesSupport)
+                  <div class="form-group{{ hasErrorFor('name') ? ' has-danger' : '' }}">
+                    <label class="form-control-label" >Name in {{ supportlang.name }}</label>
+                    <input type="text" name="name[]" class="form-control form-control-alternative"
+                        placeholder="Name"  required autofocus>
+    
+                    @if(hasErrorFor('name'))
+                      <span class="invalid-feedback" role="alert">
+                        <strong>{{ getErrorFor('name') }}</strong>
+                      </span>
+                    @endif
+                  </div>
+                  @endeach
+                @else
+                  {{-- Super Admin --}}
+                  <div class="form-group{{ hasErrorFor('organization_id') ? ' has-danger' : '' }}">
+                    <label class="form-control-label" for="input-organization-select">Organization</label>
+                    <select name="organization_id" class="form-control form-control-alternative{{ hasErrorFor('organization_id') ? ' is-invalid' : '' }}" id="input-organization-select" required>
+                      <option data-supportlangs="" data-supportlangs-id=""></option>
+                      @each(organization in organizations)
+                      <option value="{{ organization.id }}" data-supportlangs-id="{{ printSupportedLanguagesID(organization.languagesSupport) }}"
+                      data-supportlangs="{{ printSupportedLanguages(organization.languagesSupport) }}"
+                        {{ old('organization_id') == organization.id ? 'selected' : '' }}>
+                          {{ (getMatchedTranslation(organization.languages, "en")).pivot.name }}
+                        </option>
+                      @endeach
+                    </select>
+                    @if(hasErrorFor('organization_id'))
+                    <span class="invalid-feedback" role="alert">
+                      <strong>{{ getErrorFor('organization_id') }}</strong>
+                    </span>
+                    @endif
+                  </div>
 
-                <div id="dynamic-inputs">
+                  <div id="dynamic-inputs">
 
-                </div>
-                
+                  </div>
+                @endif
+
                 <div class="row">
                   <div class="col-md-6">
                     <div class="form-group{{ hasErrorFor('latitude') ? ' has-danger' : '' }}">

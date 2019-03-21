@@ -20,6 +20,14 @@ class Language extends Model {
         .withTimestamps()
     }
 
+    survey_questions () {
+      return this
+        .belongsToMany('App/Models/SurveyQuestion')
+        .pivotTable('survey_question_languages')
+        .withPivot(['question'])
+        .withTimestamps()
+    }
+
     devices () {
       return this
         .belongsToMany('App/Models/Device')

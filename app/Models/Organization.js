@@ -29,6 +29,14 @@ class Organization extends Model {
     locations () {
         return this.hasMany('App/Models/Location')
     }
+
+    survey_questions () {
+        return this.hasMany('App/Models/SurveyQuestion')
+    }
+
+    devices () {
+        return this.hasMany('App/Models/Device')
+    }
 }
 
 module.exports = Organization

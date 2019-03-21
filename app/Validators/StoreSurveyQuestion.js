@@ -1,18 +1,21 @@
 'use strict'
 
-class UpdateDevice {
+class StoreSurveyQuestion {
   get rules () {
     return {
-      'name': 'required|max:100',
+      'question': 'required',
+      'device': 'required',
       'status': 'required|number',
-      'location_id': 'required|number',
+      'rating_type': 'required|number',
+      'expire_at': 'required',
+      'organization_id': 'required'
     }
   }
 
   get messages() {
     return {
       'required': 'Please provide a {{ field }}.',
-      'location_id.required': 'Please select a location.',
+      'organization_id.required': 'Please select the organiation.',
       'number': 'The {{ field }} value must be a number.'
     }
   }
@@ -24,4 +27,4 @@ class UpdateDevice {
   }
 }
 
-module.exports = UpdateDevice
+module.exports = StoreSurveyQuestion

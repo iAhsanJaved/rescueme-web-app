@@ -18,6 +18,7 @@ const User = use('App/Models/User')
 const Role = use('App/Models/Role')
 const Location = use('App/Models/Location')
 const Device = use('App/Models/Device')
+const SurveyQuestion = use('App/Models/SurveyQuestion')
 
 class CreateUserSeeder {
   async run () {
@@ -40,9 +41,24 @@ class CreateUserSeeder {
     organization.primaryKeyValue = uuidv4()
     await organization.save()
 
-    organization.languagesSupport().attach(['en', 'ar'])
+    await organization.languagesSupport().attach(['en', 'ar'])
     await organization.languages().attach(['en'], (row) => {
         row.name = "Face Survey Inc."
+    })
+    await organization.languages().attach(['ar'], (row) => {
+      row.name = "وجه"
+    })
+
+    const organization1 = new Organization()
+    organization1.primaryKeyValue = uuidv4()
+    await organization1.save()
+
+    await organization1.languagesSupport().attach(['en', 'ar'])
+    await organization1.languages().attach(['en'], (row) => {
+        row.name = "STC"
+    })
+    await organization1.languages().attach(['ar'], (row) => {
+      row.name = "شركة الاتصالات السعودية"
     })
 
     const superAdmin = await Role.create({
@@ -108,23 +124,72 @@ class CreateUserSeeder {
     const locJeddah = await Location.create({
       latitude: -0.62616,
       longitude: -55.6666,
-      google_map_url: 'ddddddddd',
+      google_map_url: 'http://maps.google.com',
       organization_id: organization.id
     })
     await locJeddah.languages().attach(['en'], (row) => {
         row.name = "Jeddah"
     })
+    await locJeddah.languages().attach(['ar'], (row) => {
+      row.name = "جدّة"
+    })
+
+    const rhdLoc = await Location.create({
+      latitude: -0.62616,
+      longitude: -55.6666,
+      google_map_url: 'http://maps.google.com',
+      organization_id: organization1.id
+    })
+    await rhdLoc.languages().attach(['en'], (row) => {
+        row.name = "Multan"
+    })
 
     const device = await Device.create({
       id: uuidv4(),
       status: 1,
-      location_id: locJeddah.id
+      location_id: locJeddah.id,
+      organization_id: organization.id
     })
-    
+  
     await device.languages().attach(['en'], (row) => {
       row.name = "Central Device",
       row.description = "Desc....."
     })
+
+    await device.languages().attach(['ar'], (row) => {
+      row.name = "وسط",
+      row.description = "وصف"
+    })
+
+
+    const device1 = await Device.create({
+      id: uuidv4(),
+      status: 1,
+      location_id: rhdLoc.id,
+      organization_id: organization1.id
+    })
+    
+    await device1.languages().attach(['en'], (row) => {
+      row.name = "Basement Device",
+      row.description = "Desc....."
+    })
+
+    const q1 = await SurveyQuestion.create({
+      status: 1,
+      rating_type: 1,
+      expire_at: '2019-03-20 06:31:07',
+      organization_id: organization1.id
+    })
+  
+    await q1.languages().attach(['en'], (row) => {
+      row.question = "Like or Dislike?"
+    })
+
+    await q1.languages().attach(['ar'], (row) => {
+      row.question = "مثل أو كره"
+    })
+
+    await q1.devices().attach([device1.id])
 
   }
 }

@@ -1,9 +1,9 @@
 @layout('layouts.app')
 
 @section('content')
-  @set('title', 'View Location')
-  @set('mainTitle', 'Locations')
-  @set('subtitle', 'View Location')
+  @set('title', 'View Device')
+  @set('mainTitle', 'Devices')
+  @set('subtitle', 'View Device')
   @include('dashboard.partials.header')
 
   <div class="container-fluid mt--7">
@@ -16,7 +16,7 @@
                 <h3 class="mb-0">{{ subtitle }}</h3>
               </div>
               <div class="col-4 text-right">
-                <a href="{{ route('locations.index') }}" class="btn btn-sm btn-primary">Back to list</a>
+                <a href="{{ route('devices.index') }}" class="btn btn-sm btn-primary">Back to list</a>
               </div>
             </div>
           </div>
@@ -24,13 +24,8 @@
 
             <div class="pl-lg-4">
               
-              <div class="form-group row">
-                <label class="col-md-3 col-form-label form-control-label">Organization Name</label>
-                  <div class="col-md-8">
-                    <input class="form-control"  type="text" value="{{ (getMatchedTranslation(location.organization.languages, "en")).pivot.name }}" disabled>
-                  </div>
-              </div>
-              @each(translation in location.languages)
+              
+              @each(translation in device.languages)
               <div class="form-group row">
                 <label class="col-md-3 col-form-label form-control-label">Name in {{ translation.name }} </label>
                   <div class="col-md-8">
@@ -38,39 +33,47 @@
                   </div>
               </div>
               @endeach
+              @each(translation in device.languages)
+              <div class="form-group row">
+                <label class="col-md-3 col-form-label form-control-label">Description in {{ translation.name }} </label>
+                  <div class="col-md-8">
+                    <input class="form-control"  type="text" value="{{ translation.pivot.description }}" disabled>
+                  </div>
+              </div>
+              @endeach
               
               <div class="form-group row">
-                <label class="col-md-3 col-form-label form-control-label">Latitude</label>
+                <label class="col-md-3 col-form-label form-control-label">Status</label>
                   <div class="col-md-8">
-                    <input class="form-control"  type="text" value="{{ location.latitude }}" disabled>
+                    <input class="form-control"  type="text" value="{{ device.status ? 'Enabled' : 'Disabled' }}" disabled>
                   </div>
               </div>
 
               <div class="form-group row">
-                <label class="col-md-3 col-form-label form-control-label">Longitude</label>
+                <label class="col-md-3 col-form-label form-control-label">Location</label>
                   <div class="col-md-8">
-                    <input class="form-control"  type="text" value="{{ location.longitude }}" disabled>
+                    <input class="form-control"  type="text" value="{{ (getMatchedTranslation(device.location.languages, "en")).pivot.name }}" disabled>
                   </div>
               </div>
 
               <div class="form-group row">
-                <label class="col-md-3 col-form-label form-control-label">Google Map URL</label>
+                <label class="col-md-3 col-form-label form-control-label">Organization</label>
                   <div class="col-md-8">
-                    <input class="form-control"  type="text" value="{{ location.google_map_url }}" disabled>
+                    <input class="form-control"  type="text" value="{{ (getMatchedTranslation(device.organization.languages, "en")).pivot.name }}" disabled>
                   </div>
               </div>
 
               <div class="form-group row">
                 <label class="col-md-3 col-form-label form-control-label">Created On</label>
                   <div class="col-md-8">
-                    <input class="form-control"  type="text" value="{{ location.created_at }}" disabled>
+                    <input class="form-control"  type="text" value="{{ device.created_at }}" disabled>
                   </div>
               </div>
 
               <div class="form-group row">
                 <label class="col-md-3 col-form-label form-control-label">Modified On</label>
                   <div class="col-md-8">
-                    <input class="form-control"  type="text" value="{{ location.updated_at }}" disabled>
+                    <input class="form-control"  type="text" value="{{ device.updated_at }}" disabled>
                   </div>
               </div>
 
