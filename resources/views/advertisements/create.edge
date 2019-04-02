@@ -6,9 +6,9 @@
 @endsection
 
 @section('content')
-  @set('title', 'Add Survey Question')
-  @set('mainTitle', 'Survey Questions')
-  @set('subtitle', 'Add Survey Question')
+  @set('title', 'Add Advertisement')
+  @set('mainTitle', 'Advertisements')
+  @set('subtitle', 'Add Advertisement')
   @include('dashboard.partials.header')
 
   <div class="container-fluid mt--7">
@@ -21,7 +21,7 @@
                 <h3 class="mb-0">{{ subtitle }}</h3>
               </div>
               <div class="col-4 text-right">
-                <a href="{{ route('questions.index') }}" class="btn btn-sm btn-primary">Back to list</a>
+                <a href="{{ route('advertisements.index') }}" class="btn btn-sm btn-primary">Back to list</a>
               </div>
             </div>
             <div class="col-12">
@@ -36,7 +36,7 @@
             </div>
           </div>
           <div class="card-body">
-            <form method="POST" id="createSurveyQuestionForm" action="{{ route('questions.store') }}" autocomplete="off">
+            <form method="POST" id="createAdvertisementForm" action="{{ route('advertisements.store') }}" autocomplete="off">
               {{ csrfField() }}
               
               <div class="pl-lg-4">
@@ -44,14 +44,28 @@
                 <input type="hidden" name="organization_id" value="organizations[0].id">
                   {{-- Tenant Admin --}}
                   @each(supportlang in organizations[0].languagesSupport)
-                  <div class="form-group{{ hasErrorFor('question') ? ' has-danger' : '' }}">
-                    <label class="form-control-label" >Question in {{ supportlang.name }}</label>
-                    <textarea type="text" name="question[]" class="form-control form-control-alternative"
-                        placeholder="Question" required  autofocus></textarea>
+                  <div class="form-group{{ hasErrorFor('name') ? ' has-danger' : '' }}">
+                    <label class="form-control-label" >Name in {{ supportlang.name }}</label>
+                    <input type="text" name="name[]" class="form-control form-control-alternative"
+                        placeholder="Name" required  autofocus>
     
-                    @if(hasErrorFor('question'))
+                    @if(hasErrorFor('name'))
                       <span class="invalid-feedback" role="alert">
-                        <strong>{{ getErrorFor('question') }}</strong>
+                        <strong>{{ getErrorFor('name') }}</strong>
+                      </span>
+                    @endif
+                  </div>
+                  @endeach
+
+                  @each(supportlang in organizations[0].languagesSupport)
+                  <div class="form-group{{ hasErrorFor('content') ? ' has-danger' : '' }}">
+                    <label class="form-control-label" >Content in {{ supportlang.name }}</label>
+                    <textarea type="text" name="content[]" class="form-control form-control-alternative"
+                        placeholder="Content" required  autofocus></textarea>
+    
+                    @if(hasErrorFor('content'))
+                      <span class="invalid-feedback" role="alert">
+                        <strong>{{ getErrorFor('content') }}</strong>
                       </span>
                     @endif
                   </div>
@@ -102,51 +116,80 @@
                   </div>
                 @endif
 
+                <div class="form-group{{ hasErrorFor('reaction') ? ' has-danger' : '' }}">
+                  <label class="form-control-label" for="input-name">Reactions</label>
+                  <br>
+                  <div class="custom-control custom-checkbox d-inline mr-2">
+                    <input name="reaction[]" id="checkAll" class="custom-control-input"
+                      value="all" type="checkbox">
+                    <label class="custom-control-label" for="checkAll">All</label>
+                  </div>  
+                  @each(reaction in reactions)
+                    <div class="custom-control custom-checkbox d-inline mr-2">
+                      <input name="reaction[]" class="custom-control-input" id="customCheck{{ reaction.id }}" 
+                        value="{{ reaction.id }}" type="checkbox">
+                      <label class="custom-control-label" for="customCheck{{ reaction.id }}">{{ reaction.title }}</label>
+                    </div>
+                  @endeach
+
+                    @if(hasErrorFor('reaction'))
+                    <span class="invalid-feedback" role="alert">
+                      <strong>{{ getErrorFor('reaction') }}</strong>
+                    </span>
+                    @endif
+                </div>
+
                 <div class="row">
                   <div class="col-md-6">
-                    <div class="form-group{{ hasErrorFor('rating_type') ? ' has-danger' : '' }}">
-                      <label class="form-control-label">Rating Type</label>
+                    <div class="form-group{{ hasErrorFor('client_min_age') ? ' has-danger' : '' }}">
+                      <label class="form-control-label">Client Age</label>
                       <br>
-                      <div class="custom-control custom-radio d-inline">
-                        <input name="rating_type" value="1" class="custom-control-input" id="radioBtn1" 
-                        type="radio" {{ old('rating_type', '') == 1 ? 'checked' : '' }} required>
-                        <label class="custom-control-label" for="radioBtn1">Face</label>
-                      </div>
-                      <div class="custom-control custom-radio d-inline ml-2">
-                        <input name="rating_type" value="0" class="custom-control-input" id="radioBtn2" 
-                        type="radio" {{ old('rating_type', 1) == 0 ? 'checked' : '' }} required>
-                        <label class="custom-control-label" for="radioBtn2">Thumb</label>
-                      </div>
-                      @if(hasErrorFor('rating_type'))
+                      <input type="number" name="client_min_age" class="form-control form-control-alternative{{ hasErrorFor('client_min_age') || hasErrorFor('client_max_age') ? ' is-invalid' : '' }} d-inline mr-2"
+                       value="{{ old('client_min_age', '') }}" style="width: 70px;" min="1" max="300" autofocus>
+                      to
+                      <input type="number" name="client_max_age" class="form-control form-control-alternative{{ hasErrorFor('client_max_age') ? ' is-invalid' : '' }} d-inline ml-2"
+                       value="{{ old('client_max_age', '') }}" style="width: 70px;" min="1" max="300" autofocus>
+
+                      @if(hasErrorFor('client_min_age'))
                       <span class="invalid-feedback" role="alert">
-                        <strong>{{ getErrorFor('rating_type') }}</strong>
+                        <strong>Client Min age: {{ getErrorFor('client_min_age') }}</strong>
                       </span>
                       @endif
-                    </div>
-                  </div>
-                  
-                  <div class="col-md-6">
-                    <div class="form-group{{ hasErrorFor('status') ? ' has-danger' : '' }}">
-                      <label class="form-control-label">Status</label>
-                      <br>
-                      <div class="custom-control custom-radio d-inline">
-                        <input name="status" value="1" class="custom-control-input" id="radioBtn3" 
-                        type="radio" {{ old('status', '') == 1 ? 'checked' : '' }} required>
-                        <label class="custom-control-label" for="radioBtn3">Enable</label>
-                      </div>
-                      <div class="custom-control custom-radio d-inline ml-2">
-                        <input name="status" value="0" class="custom-control-input" id="radioBtn4" 
-                        type="radio" {{ old('status', 1) == 0 ? 'checked' : '' }} required>
-                        <label class="custom-control-label" for="radioBtn4">Disable</label>
-                      </div>
-                      @if(hasErrorFor('status'))
+                      @if(hasErrorFor('client_max_age'))
                       <span class="invalid-feedback" role="alert">
-                        <strong>{{ getErrorFor('status') }}</strong>
+                        <strong>Client Max age: {{ getErrorFor('client_max_age') }}</strong>
                       </span>
                       @endif
                     </div>
                   </div>
 
+                  <div class="col-md-6">
+                      <div class="form-group{{ hasErrorFor('client_gender') ? ' has-danger' : '' }}">
+                        <label class="form-control-label">Client Gender</label>
+                        <br>
+                        <div class="custom-control custom-radio d-inline">
+                          <input name="client_gender" value="" class="custom-control-input" id="radioBtn1" 
+                          type="radio" {{ old('client_gender', '') == '' ? 'checked' : '' }} required>
+                          <label class="custom-control-label" for="radioBtn1">All</label>
+                        </div>
+                        <div class="custom-control custom-radio d-inline ml-2">
+                          <input name="client_gender" value="1" class="custom-control-input" id="radioBtn2" 
+                          type="radio" {{ old('client_gender', '') == 1 ? 'checked' : '' }} required>
+                          <label class="custom-control-label" for="radioBtn2">Male</label>
+                        </div>
+                        <div class="custom-control custom-radio d-inline ml-2">
+                          <input name="client_gender" value="0" class="custom-control-input" id="radioBtn3" 
+                          type="radio" {{ old('rating_type', 1) == 0 ? 'checked' : '' }} required>
+                          <label class="custom-control-label" for="radioBtn3">Female</label>
+                        </div>
+                        @if(hasErrorFor('client_gender'))
+                        <span class="invalid-feedback" role="alert">
+                          <strong>{{ getErrorFor('client_gender') }}</strong>
+                        </span>
+                        @endif
+                      </div>
+                    </div>
+                    
                   <div class="col-md-6">
                     <div class="form-group{{ hasErrorFor('expire_at') ? ' has-danger' : '' }}">
                       <label class="form-control-label" for="input-expire_at">Expire At</label>

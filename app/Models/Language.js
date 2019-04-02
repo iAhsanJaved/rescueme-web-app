@@ -36,6 +36,14 @@ class Language extends Model {
         .withTimestamps()
     }
 
+    advertisements () {
+      return this
+        .belongsToMany('App/Models/Advertisement')
+        .pivotTable('advertisement_languages')
+        .withPivot(['name', 'content'])
+        .withTimestamps()
+    }
+
     organizationsSupport () {
         return this
           .belongsToMany('App/Models/Organization', 'language_id', 'organization_id', 'id', 'id')

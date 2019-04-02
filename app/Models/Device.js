@@ -22,8 +22,15 @@ class Device extends Model {
     
     survey_questions () {
         return this
-          .belongsToMany('App/Models/Device', 'device_id', 'survey_question_id', 'id', 'id' )
+          .belongsToMany('App/Models/SurveyQuestion', 'device_id', 'survey_question_id', 'id', 'id' )
           .pivotTable('survey_question_devices')
+          .withTimestamps()
+    }
+
+    advertisements () {
+        return this
+          .belongsToMany('App/Models/Advertisement', 'device_id', 'advertisement_id', 'id', 'id' )
+          .pivotTable('advertisement_devices')
           .withTimestamps()
     }
 

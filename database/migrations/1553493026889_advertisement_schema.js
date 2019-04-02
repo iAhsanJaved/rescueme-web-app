@@ -3,12 +3,13 @@
 /** @type {import('@adonisjs/lucid/src/Schema')} */
 const Schema = use('Schema')
 
-class SurveyQuestionSchema extends Schema {
+class AdvertisementSchema extends Schema {
   up () {
-    this.create('survey_questions', (table) => {
+    this.create('advertisements', (table) => {
       table.increments()
-      table.boolean('rating_type').notNullable()
-      table.boolean('status').notNullable()
+      table.boolean('client_gender')
+      table.integer('client_min_age')
+      table.integer('client_max_age')
       table.datetime('expire_at').notNullable()
       table.uuid('organization_id').notNullable().references('id').inTable('organizations')
       table.timestamps()
@@ -16,8 +17,8 @@ class SurveyQuestionSchema extends Schema {
   }
 
   down () {
-    this.drop('survey_questions')
+    this.drop('advertisements')
   }
 }
 
-module.exports = SurveyQuestionSchema
+module.exports = AdvertisementSchema

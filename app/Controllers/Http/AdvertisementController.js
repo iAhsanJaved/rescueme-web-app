@@ -2,35 +2,38 @@
 
 const Organization = use('App/Models/Organization')
 const SurveyQuestion = use('App/Models/SurveyQuestion')
+const Advertisement = use('App/Models/Advertisement')
+const Reaction = use('App/Models/Reaction')
 
-class SurveyQuestionController {
-
+class AdvertisementController {
     async index ({ view, auth }) {
         // Get Role of Authenticated User
         const user_role = ((await auth.user.role().fetch()).toJSON()).slug;
         
-        let survey_questions;
+        let advertisements;
         if(user_role == 'super_admin') {
-            // Fetch all SurveyQuestions with 'en' Language
-            survey_questions = await SurveyQuestion.query()
+            // Fetch all Advertisement with 'en' Language
+            advertisements = await Advertisement.query()
             .with('devices.languages')
+            .with('reactions')
             .with('languages', (builder) => {
                 builder.where('language_id', '=','en')
             }).fetch()
         } else {
-            // Fetch SurveyQuestions with 'en' Language 
-            // (organization_id of SurveyQuestions must be equal to Authenticated User's organization_id)
-            survey_questions = await SurveyQuestion.query()
+            // Fetch Advertisement with 'en' Language 
+            // (organization_id of Advertisement must be equal to Authenticated User's organization_id)
+            advertisements = await Advertisement.query()
             .where('organization_id', '=', auth.user.organization_id)
             .with('devices.languages')
+            .with('reactions')
             .with('languages', (builder) => {
                 builder.where('language_id', '=','en')
             }).fetch()
         }
 
         // Response
-        return view.render('questions.index', { 
-            survey_questions: survey_questions.toJSON() 
+        return view.render('advertisements.index', { 
+            advertisements: advertisements.toJSON() 
         });
     }
   
@@ -54,10 +57,13 @@ class SurveyQuestionController {
             .with('languages').with('languagesSupport').fetch()
         }
         
+        // Fetch all Reactions
+        const reactions = await Reaction.all()
         
         // Response
-        return view.render('questions.create', { 
-            organizations: organizations.toJSON() 
+        return view.render('advertisements.create', { 
+            organizations: organizations.toJSON(),
+            reactions: reactions.toJSON()
         });
     }
 
@@ -66,144 +72,166 @@ class SurveyQuestionController {
         const user_role = ((await auth.user.role().fetch()).toJSON()).slug;
         // Request Data
         const data = request.only([
-            'question', 'device', 'rating_type', 'status', 'expire_at', 'organization_id'
+            'name', 'content', 'device', 'reaction', 
+            'client_min_age', 'client_max_age', 'client_gender', 
+            'expire_at', 'organization_id'
         ])
 
         if(user_role != 'super_admin') {
             data.organization_id = auth.user.organization_id;
         }
 
-        // Create Survey Question
-        const survey_question = await SurveyQuestion.create({
-            rating_type: data.rating_type,
-            status: data.status,
+        // Create Advertisement
+        const advertisement = await Advertisement.create({
+            client_min_age: data.client_min_age,
+            client_max_age: data.client_max_age,
+            client_gender: data.client_gender,
             expire_at: (new Date(new Date(data.expire_at).toString().split('GMT')[0]+' UTC').toISOString().split('.')[0]),
             organization_id: data.organization_id
         })
 
         // Fetch Organization
-        const organization = await Organization.findOrFail(survey_question.organization_id)
+        const organization = await Organization.findOrFail(advertisement.organization_id)
         const supportLangs = (await organization.languagesSupport().fetch()).toJSON()
 
-        for(var i=0; i<data.question.length; i++) {
-            await survey_question.languages().attach([supportLangs[i].id], (row) => {
-                row.question = data.question[i]
+        for(var i=0; i<data.name.length; i++) {
+            await advertisement.languages().attach([supportLangs[i].id], (row) => {
+                row.name = data.name[i],
+                row.content = data.content[i]
             })
         }
 
-        await survey_question.devices().attach(data.device)
-
+        await advertisement.devices().attach(data.device)
+        
+        if(data.reaction[0] != 'all') {
+            await advertisement.reactions().attach(data.reaction)
+        }
+        
         // Response
-		session.flash({ message: 'Survey Question has been added.' });
+		session.flash({ message: 'Advertisement has been added.' });
 		return response.redirect('back');
     }
 
     async show({ params, view, auth, request }) {
         // Get Role of Authenticated User
         const user_role = ((await auth.user.role().fetch()).toJSON()).slug;
-        // Find Survey Question
-        const survey_question = await SurveyQuestion.findOrFail(params.id)
+        // Find Advertisement
+        const advertisement = await Advertisement.findOrFail(params.id)
         
         if(user_role != 'super_admin' 
-            && survey_question.organization_id != auth.user.organization_id) {
+            && advertisement.organization_id != auth.user.organization_id) {
             // Exception Response
             return view.render('exceptions.unauthorization', { url: request.url() });
         }
         
-        // Load Languages, Devices, Organization to Survey Question 
-        await survey_question.loadMany(['languages', 'devices.languages', 'organization.languages'])
+        // Load Languages, Devices, Organization to Advertisement
+        await advertisement.loadMany([
+            'languages', 'devices.languages', 'organization.languages',
+            'reactions'
+        ])
         
         // Response
-        return view.render('questions.show', { 
-            survey_question: survey_question.toJSON() 
+        return view.render('advertisements.show', { 
+            advertisement: advertisement.toJSON() 
         });
     }
 
     async edit({ params, view, auth, request }) {
         // Get Role of Authenticated User
         const user_role = ((await auth.user.role().fetch()).toJSON()).slug;
-        // Find Survey Question
-        const survey_question = await SurveyQuestion.findOrFail(params.id)
+        // Find Advertisement
+        const advertisement = await Advertisement.findOrFail(params.id)
         
         if(user_role != 'super_admin' 
-            && survey_question.organization_id != auth.user.organization_id) {
+            && advertisement.organization_id != auth.user.organization_id) {
             // Exception Response
             return view.render('exceptions.unauthorization', { url: request.url() });
         }
         
-        // Load Languages, Devices, Organization to Survey Question 
-        await survey_question.loadMany([
+        // Load Languages, Devices, Organization to Advertisement 
+        await advertisement.loadMany([
             'languages', 'devices', 
             'organization.languages', 'organization.languagesSupport',
-            'organization.devices.languages',
+            'organization.devices.languages', 'reactions'
         ])
 
+        // Fetch all Reactions
+        const reactions = await Reaction.all()
+
         // Response
-        return view.render('questions.edit', { 
-            survey_question: survey_question.toJSON()
+        return view.render('advertisements.edit', { 
+            advertisement: advertisement.toJSON(),
+            reactions: reactions.toJSON()
         });
     }
 
     async update({ params, response, request, session, auth }) {
         // Get Role of Authenticated User
         const user_role = ((await auth.user.role().fetch()).toJSON()).slug;
-        // Find Survey Question
-        const survey_question = await SurveyQuestion.findOrFail(params.id)
+        // Find Advertisement
+        const advertisement = await Advertisement.findOrFail(params.id)
         
         if(user_role != 'super_admin' 
-            && survey_question.organization_id != auth.user.organization_id) {
+            && advertisement.organization_id != auth.user.organization_id) {
             // Exception Response
             return view.render('exceptions.unauthorization', { url: request.url() });
         }
 
         // Request Data
         const data = request.only([
-            'question', 'device', 'rating_type', 'status', 'expire_at'
+            'name', 'content', 'device', 'reaction', 
+            'client_min_age', 'client_max_age', 'client_gender', 'expire_at'
         ])
 
         
         // Fetch Organization
-        const organization = await Organization.findOrFail(survey_question.organization_id)
+        const organization = await Organization.findOrFail(advertisement.organization_id)
         // Fetch Supported Languages array ['en', 'ar']
         const supportLangs = (await organization.languagesSupport().fetch()).toJSON()
         
-        await survey_question.languages().detach()
-        for(var i=0; i<data.question.length; i++) {
-            await survey_question.languages().attach([supportLangs[i].id], (row) => {
-                row.question = data.question[i]
+        await advertisement.languages().detach()
+        for(var i=0; i<data.name.length; i++) {
+            await advertisement.languages().attach([supportLangs[i].id], (row) => {
+                row.name = data.name[i],
+                row.content = data.content[i]
             })
         }
         
-        await survey_question.devices().sync(data.device)
+        await advertisement.devices().sync(data.device)
 
-        // Update Survey Question  
-        survey_question.rating_type = data.rating_type
-        survey_question.status = data.status
-        survey_question.expire_at = (new Date(new Date(data.expire_at).toString().split('GMT')[0]+' UTC').toISOString().split('.')[0]),
-        await survey_question.save()
+        if(data.reaction[0] != 'all') {
+            await advertisement.reactions().attach(data.reaction)
+        }
+
+        // Update Advertisement  
+        advertisement.client_min_age = data.client_min_age
+        advertisement.client_max_age = data.client_max_age
+        advertisement.client_gender = data.client_gender
+        advertisement.expire_at = (new Date(new Date(data.expire_at).toString().split('GMT')[0]+' UTC').toISOString().split('.')[0]),
+        await advertisement.save()
         // Response
-		session.flash({ message: 'Survey Question has been updated.' });
+		session.flash({ message: 'Advertisement has been updated.' });
 		return response.redirect('back');
     }
 
     async destroy({ params, response, session, auth, request, view }) {
         // Get Role of Authenticated User
         const user_role = ((await auth.user.role().fetch()).toJSON()).slug;
-        // Find Survey Question
-        const survey_question = await SurveyQuestion.findOrFail(params.id)
+        // Find Advertisement
+        const advertisement = await Advertisement.findOrFail(params.id)
         
         if(user_role != 'super_admin' 
-            && survey_question.organization_id != auth.user.organization_id) {
+            && advertisement.organization_id != auth.user.organization_id) {
             // Exception Response
             return view.render('exceptions.unauthorization', { url: request.url() });
         }
         
-        // Delete Survey Question
-		await survey_question.delete();
+        // Delete Advertisement
+		await advertisement.delete();
         // Response
-		session.flash({ message: 'Survey Question has been deleted.' });
+		session.flash({ message: 'Advertisement has been deleted.' });
 		return response.redirect('back');
     }
 }
 
-module.exports = SurveyQuestionController
+module.exports = AdvertisementController

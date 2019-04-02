@@ -66,6 +66,12 @@ Route.group(() => {
         [['questions.update'], ['UpdateSurveyQuestion']]
     ]))
 
+    Route.resource('advertisements', 'AdvertisementController')
+    .validator(new Map([
+        [['advertisements.store'], ['StoreAdvertisement']],
+        [['advertisements.update'], ['UpdateAdvertisement']]
+    ]))
+
 }).middleware(['super_tenant'])
 
 

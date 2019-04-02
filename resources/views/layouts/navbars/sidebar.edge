@@ -114,11 +114,17 @@
         </a>
       </li>
       <li class="nav-item">
-          <a class="nav-link {{ activeRoute(request.url(), 'questions') }}" href="{{ route('questions.index') }}">
-            <i class="ni fas fa-question text-green"></i> 
+        <a class="nav-link {{ activeRoute(request.url(), 'questions') }}" href="{{ route('questions.index') }}">
+          <i class="ni fas fa-question text-green"></i> 
             Survey Questions
-          </a>
-        </li>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link {{ activeRoute(request.url(), 'advertisements') }}" href="{{ route('advertisements.index') }}">
+          <i class="ni ni-notification-70 text-pink"></i> 
+          Advertisements
+        </a>
+      </li>
       @endif
         {{--
         <li class="nav-item">

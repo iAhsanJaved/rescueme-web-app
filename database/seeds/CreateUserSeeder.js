@@ -19,6 +19,8 @@ const Role = use('App/Models/Role')
 const Location = use('App/Models/Location')
 const Device = use('App/Models/Device')
 const SurveyQuestion = use('App/Models/SurveyQuestion')
+const Reaction = use('App/Models/Reaction')
+const Advertisement = use('App/Models/Advertisement')
 
 class CreateUserSeeder {
   async run () {
@@ -190,6 +192,35 @@ class CreateUserSeeder {
     })
 
     await q1.devices().attach([device1.id])
+
+    const reactions = await Reaction.createMany([
+      { title: 'Good' },
+      { title: 'Awesome' },
+      { title: 'Bad' },
+      { title: 'Worst' },
+    ])
+
+    const ads = await Advertisement.create({
+      client_gender: 1,
+      client_min_age: 20,
+      client_max_age: 30,
+      expire_at: '2019-03-20 06:31:07',
+      organization_id: organization1.id,
+    })
+
+    await ads.languages().attach(['en'], (row) => {
+      row.name = "STC ads",
+      row.content = "content"
+    })
+
+    await ads.languages().attach(['ar'], (row) => {
+      row.name = "مثل أو كره",
+      row.content = "content"
+    })
+
+    await ads.devices().attach([device1.id])
+
+    await ads.reactions().attach([reactions[0].id, reactions[1].id])
 
   }
 }

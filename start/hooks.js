@@ -60,7 +60,6 @@ hooks.after.providersBooted(( ) => {
   })
 
   View.global('printObjectName', function (arrObject, separator) {
-    console.log(arrObject)
     let temp = '';
     arrObject.map(e => {
       e.languages.map(j => {

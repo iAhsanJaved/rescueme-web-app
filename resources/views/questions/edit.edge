@@ -1,5 +1,10 @@
 @layout('layouts.app')
 
+@section('css')
+  @super
+  {{ style('https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.0.1/css/tempusdominus-bootstrap-4.min.css') }}
+@endsection
+
 @section('content')
   @set('title', 'Edit Survey Question')
   @set('mainTitle', 'Survey Questions')
@@ -38,9 +43,9 @@
                 @each(supportlang in survey_question.organization.languagesSupport)
                 <div class="form-group{{ hasErrorFor('question') ? ' has-danger' : '' }}">
                   <label class="form-control-label">Question in {{ supportlang.name }}</label>
-                  <input type="text" name="question[]" class="form-control form-control-alternative{{ hasErrorFor('question') ? ' is-invalid' : '' }}"
-                    placeholder="Question" 
-                    value="{{ getMatchedTranslation(survey_question.languages, supportlang.id) ? (getMatchedTranslation(survey_question.languages, supportlang.id)).pivot.question : '' }}" required autofocus>
+                  <textarea type="text" name="question[]" class="form-control form-control-alternative{{ hasErrorFor('question') ? ' is-invalid' : '' }}"
+                    placeholder="Question" required autofocus>{{ getMatchedTranslation(survey_question.languages, supportlang.id) ? (getMatchedTranslation(survey_question.languages, supportlang.id)).pivot.question : '' }}
+                  </textarea>
 
                   @if(hasErrorFor('name'))
                   <span class="invalid-feedback" role="alert">
@@ -116,8 +121,12 @@
                   <div class="col-md-6">
                     <div class="form-group{{ hasErrorFor('expire_at') ? ' has-danger' : '' }}">
                       <label class="form-control-label" for="input-expire_at">Expire At</label>
-                      <input type="datetime-local" name="expire_at" id="input-expire_at" class="form-control form-control-alternative{{ hasErrorFor('expire_at') ? ' is-invalid' : '' }}"
-                      value="{{ old('expire_at', convertToTimeStamp(survey_question.expire_at)) }}" required autofocus>
+                      <div class="input-group date" id="datetimepicker" data-target-input="nearest">
+                        <input name="expire_at" type="text" value="{{ convertToDateTime(old('expire_at', survey_question.expire_at)) }}" class="form-control datetimepicker-input" data-target="#datetimepicker" required autofocus/>
+                        <div class="input-group-append" data-target="#datetimepicker" data-toggle="datetimepicker">
+                          <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                        </div>
+                      </div>
 
                       @if(hasErrorFor('expire_at'))
                       <span class="invalid-feedback" role="alert">
@@ -142,4 +151,11 @@
 
     @include('layouts.footers.auth')
   </div>
+@endsection
+
+@section('script')
+  @super
+  {{ script('https://cdn.jsdelivr.net/momentjs/latest/moment.min.js') }}
+  {{ script('https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.0.1/js/tempusdominus-bootstrap-4.min.js') }}
+  {{ script('/js/form.js') }}
 @endsection

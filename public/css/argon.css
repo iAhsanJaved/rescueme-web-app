@@ -21907,3 +21907,13 @@ html:not([dir='rtl']) .noUi-horizontal .noUi-handle
 div.dataTables_wrapper div.dataTables_paginate {
     padding-bottom: 5px;
 }
+
+.card #datetimepicker .table td,
+.card #datetimepicker .table th
+{
+    padding-right: 0; 
+    padding-left: 0;
+}
+#datetimepicker .btn:hover {
+    box-shadow: none;
+}
