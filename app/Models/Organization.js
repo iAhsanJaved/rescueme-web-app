@@ -22,9 +22,6 @@ class Organization extends Model {
           .pivotTable('organization_lang_supports')
     }
 
-    users () {
-        return this.hasMany('App/Models/User')
-    }
 
     locations () {
         return this.hasMany('App/Models/Location')

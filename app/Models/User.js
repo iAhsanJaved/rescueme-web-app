@@ -41,9 +41,6 @@ class User extends Model {
     return this.belongsTo('App/Models/Role')
   }
 
-  organization () {
-    return this.belongsTo('App/Models/Organization')
-  }
 
   static get hidden () {
     return ['password']

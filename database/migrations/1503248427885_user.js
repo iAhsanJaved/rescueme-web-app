@@ -14,7 +14,6 @@ class UserSchema extends Schema {
       table.boolean('gender').notNullable()
       table.boolean('status').notNullable()
       table.integer('role_id').unsigned().references('id').inTable('roles')
-      table.uuid('organization_id').references('id').inTable('organizations')
       table.timestamps()
     })
   }

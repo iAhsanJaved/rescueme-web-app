@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     {{-- Title --}}
-    <title>{{ title ? title + ' | ': ''}}Face & Thumb Surveys</title>
+    <title>{{ title ? title + ' | ': ''}}RescueMe</title>
     
     {{-- CSS --}}
     <!-- Favicon -->
@@ -23,7 +23,7 @@
     {{ style('/css/argon.css?v=1.0.0') }}
   </head>
   
-<body class="{{ bodyClass ? bodyClass : '' }}">
+<body>
     @loggedIn()
       @include('layouts.navbars.sidebar')
     @endloggedIn

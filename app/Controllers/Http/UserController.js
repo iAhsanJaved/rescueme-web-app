@@ -3,7 +3,6 @@ const uuidv4 = require('uuid/v4');
 
 const User = use('App/Models/User')
 const Role = use('App/Models/Role')
-const Organization = use('App/Models/Organization')
 
 class UserController {
     

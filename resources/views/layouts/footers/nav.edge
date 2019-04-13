@@ -1,19 +1,19 @@
 <div class="row align-items-center justify-content-xl-between">
   <div class="col-xl-6">
     <div class="copyright text-center text-xl-left text-muted">
-      &copy; {{ currentYear() }} <a href="/" class="font-weight-bold ml-1" target="_blank">Face & Thumb Surveys</a>
+      &copy; {{ currentYear() }} <a href="/" class="font-weight-bold ml-1">RescueMe</a>
     </div>
   </div>
   <div class="col-xl-6">
     <ul class="nav nav-footer justify-content-center justify-content-xl-end">
       <li class="nav-item">
-        <a href="#" class="nav-link" target="_blank">Home</a>
+        <a href="/" class="nav-link">Home</a>
       </li>
       <li class="nav-item">
-        <a href="#" class="nav-link" target="_blank">About Us</a>
+        <a href="{{ route('login') }}" class="nav-link">Login</a>
       </li>
       <li class="nav-item">
-        <a href="#" class="nav-link" target="_blank">Contact Us</a>
+        <a href="{{ route('dashboard.index') }}" class="nav-link">Dashboard</a>
       </li>
     </ul>
   </div>
