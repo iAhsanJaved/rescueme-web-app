@@ -1,33 +1,13 @@
 'use strict'
 
 const Location = use('App/Models/Location')
-const Organization = use('App/Models/Organization')
 
 class LocationController {
 
     async index ({ view, auth }) {
-        // Get Role of Authenticated User
-        const user_role = ((await auth.user.role().fetch()).toJSON()).slug;
+        // Fetch all Locations with 'en' Language
+        const locations = await Location.query()
         
-        let locations;
-        if(user_role == 'super_admin') {
-            // Fetch all Locations with 'en' Language
-            locations = await Location.query()
-            .with('organization.languages')
-            .with('languages', (builder) => {
-                builder.where('language_id', '=','en')
-            }).fetch()
-        } else {
-            // Fetch Locations with 'en' Language 
-            // (organization_id of Locations must be equal to Authenticated User's organization_id)
-            locations = await Location.query()
-            .where('organization_id', '=', auth.user.organization_id)
-            .with('organization.languages')
-            .with('languages', (builder) => {
-                builder.where('language_id', '=', 'en')
-            }).fetch()
-        }
-
         // Response
         return view.render('locations.index', { 
             locations: locations.toJSON() 
@@ -35,24 +15,6 @@ class LocationController {
     }
   
     async create({ view, auth }) {
-        // Get Role of Authenticated User
-        const user_role = ((await auth.user.role().fetch()).toJSON()).slug;
-
-        let organizations;
-        if(user_role == 'super_admin') {
-            // Fetch all Organizations with Languages they support(translation)
-            organizations = await Organization.query()
-            .with('languages').with('languagesSupport').fetch()
-
-        } else {
-            // Fetch Organization with Languages they support(translation)
-            // (organization_id of organization must be equal to Authenticated User's organization_id) 
-            organizations = await Organization.query()
-            .where('id', '=', auth.user.organization_id)
-            .with('languages').with('languagesSupport').fetch()
-        }
-        
-        
         // Response
         return view.render('locations.create', { 
             organizations: organizations.toJSON() 
@@ -60,34 +22,18 @@ class LocationController {
     }
 
     async store({ response, request, session, auth }) {
-        // Get Role of Authenticated User
-        const user_role = ((await auth.user.role().fetch()).toJSON()).slug;
         // Request Data
         const data = request.only([
-            'name', 'latitude', 'longitude', 'google_map_url', 'organization_id'
+            'name', 'latitude', 'longitude', 'google_map_url', 
         ])
 
-        if(user_role != 'super_admin') {
-            data.organization_id = auth.user.organization_id;
-        }
-
+        
         // Create Location
         const location = await Location.create({
             latitude: data.latitude,
             longitude: data.longitude,
             google_map_url: data.google_map_url,
-            organization_id: data.organization_id
         })
-
-        // Fetch Organization
-        const organization = await Organization.findOrFail(location.organization_id)
-        const supportLangs = (await organization.languagesSupport().fetch()).toJSON()
-
-        for(var i=0; i<data.name.length; i++) {
-            await location.languages().attach([supportLangs[i].id], (row) => {
-                row.name = data.name[i]
-            })
-        }
 
         // Response
 		session.flash({ message: 'Location has been added.' });
@@ -95,25 +41,9 @@ class LocationController {
     }
 
     async show({ params, view, auth, request }) {
-        // Get Role of Authenticated User
-        const user_role = ((await auth.user.role().fetch()).toJSON()).slug;
         // Find Location
         const location = await Location.findOrFail(params.id)
         
-        if(user_role != 'super_admin' 
-            && location.organization_id != auth.user.organization_id) {
-            // Exception Response
-            return view.render('exceptions.unauthorization', { url: request.url() });
-        }
-        // Load Languages to Location 
-        await location.load('languages')
-        
-        // Fetch Organization
-        const organization = await location.organization().fetch()
-        await organization.load('languages')
-        
-        // Attach Organization to Location 
-        location.organization = organization.toJSON()
         // Response
         return view.render('locations.show', { 
             location: location.toJSON() 
@@ -121,26 +51,9 @@ class LocationController {
     }
 
     async edit({ params, view, auth, request }) {
-        // Get Role of Authenticated User
-        const user_role = ((await auth.user.role().fetch()).toJSON()).slug;
         // Find Location
         const location = await Location.findOrFail(params.id)
         
-        if(user_role != 'super_admin' 
-            && location.organization_id != auth.user.organization_id) {
-            // Exception Response
-            return view.render('exceptions.unauthorization', { url: request.url() });
-        }
-        
-        // Load Languages to Location 
-        await location.load('languages')
-
-        // Fetch Organization
-        const organization = await Organization.findOrFail(location.organization_id)
-        await organization.loadMany(['languages', 'languagesSupport'])
-        // Attach Organization to Location 
-        location.organization = organization.toJSON()
-
         // Response
         return view.render('locations.edit', { 
             location: location.toJSON()
@@ -148,60 +61,32 @@ class LocationController {
     }
 
     async update({ params, response, request, session, auth }) {
-        // Get Role of Authenticated User
-        const user_role = ((await auth.user.role().fetch()).toJSON()).slug;
         // Find Location
         const location = await Location.findOrFail(params.id)
         
-        if(user_role != 'super_admin' 
-            && location.organization_id != auth.user.organization_id) {
-            // Exception Response
-            return view.render('exceptions.unauthorization', { url: request.url() });
-        }
-
         // Request Data
         const data = request.only([
             'name', 'latitude', 'longitude', 'google_map_url'
         ])
-        
-        // Fetch Organization
-        const organization = await Organization.findOrFail(location.organization_id)
-        // Fetch Supported Languages array ['en', 'ar']
-        const supportLangs = (await organization.languagesSupport().fetch()).toJSON()
-        
-        console.log(location);
-        console.log(supportLangs)
-        await location.languages().detach()
-        for(var i=0; i<data.name.length; i++) {
-            await location.languages().attach([supportLangs[i].id], (row) => {
-                row.name = data.name[i]
-            })
-        }
         
         // Update Location 
         location.latitude = data.latitude
         location.longitude = data.longitude
         location.google_map_url = data.google_map_url
         await location.save()
+        
         // Response
 		session.flash({ message: 'Location has been updated.' });
 		return response.redirect('back');
     }
 
     async destroy({ params, response, session, auth, request, view }) {
-        // Get Role of Authenticated User
-        const user_role = ((await auth.user.role().fetch()).toJSON()).slug;
         // Find Location
         const location = await Location.findOrFail(params.id);
         
-        if(user_role != 'super_admin' 
-            && location.organization_id != auth.user.organization_id) {
-            // Exception Response
-            return view.render('exceptions.unauthorization', { url: request.url() });
-        }
-        
         // Delete Location
 		await location.delete();
+        
         // Response
 		session.flash({ message: 'Location has been deleted.' });
 		return response.redirect('back');

@@ -10,7 +10,6 @@ class LocationSchema extends Schema {
       table.float('latitude', 10, 6)
       table.float('longitude', 10, 6)
       table.text('google_map_url')
-      table.uuid('organization_id').notNullable().references('id').inTable('organizations')
       table.timestamps()
     })
   }
