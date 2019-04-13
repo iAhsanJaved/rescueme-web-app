@@ -88,9 +88,9 @@
       {{-- RoleID: 1.Admin, 2.Operator --}}
       @if(auth.user.role_id == 1 || auth.user.role_id == 2)
       <li class="nav-item">
-        <a class="nav-link {{ activeRoute(request.url(), 'locations') }}" href="{{ route('locations.index') }}">
-          <i class="ni ni-square-pin text-orange"></i> 
-          Locations
+        <a class="nav-link {{ activeRoute(request.url(), 'nodes') }}" href="{{ route('nodes.index') }}">
+          <i class="ni ni-atom text-green"></i> 
+          Nodes
         </a>
       </li>
       @endif

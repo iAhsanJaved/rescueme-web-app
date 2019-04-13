@@ -1,17 +1,18 @@
 'use strict'
 
-class StoreLocation {
+class UpdateNode {
   get rules () {
     return {
       'name': 'required|max:100',
-      'organization_id': 'required'
+      'address': 'required|max:250',
+      'latitude': 'required',
+      'longitude': 'required'
     }
   }
 
   get messages() {
     return {
       'required': 'Please provide a {{ field }}.',
-      'organization_id.required': 'Please select the organiation.',
     }
   }
 
@@ -22,4 +23,4 @@ class StoreLocation {
   }
 }
 
-module.exports = StoreLocation
+module.exports = UpdateNode

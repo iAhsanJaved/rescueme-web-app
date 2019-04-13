@@ -1,20 +1,20 @@
 'use strict'
 
-class UpdateLocation {
+class StoreNode {
   get rules () {
-    const languageId = this.ctx.params.id
     return {
       'name': 'required|max:100',
+      'address': 'required|max:250',
+      'latitude': 'required',
+      'longitude': 'required'
     }
   }
 
   get messages() {
     return {
       'required': 'Please provide a {{ field }}.',
-      'max': 'The {{ field }} must not exceed than {{ argument.0 }} characters.',
     }
   }
-
 
   async fails (error) {
   	this.ctx.session.withErrors(error)
@@ -23,4 +23,4 @@ class UpdateLocation {
   }
 }
 
-module.exports = UpdateLocation
+module.exports = StoreNode

@@ -38,10 +38,10 @@ Route.group(() => {
 Route.group(() => {
 
     
-    Route.resource('locations', 'LocationController')
+    Route.resource('nodes', 'NodeController')
     .validator(new Map([
-        [['locations.store'], ['StoreLocation']],
-        [['locations.update'], ['UpdateLocation']]
+        [['nodes.store'], ['StoreNode']],
+        [['nodes.update'], ['UpdateNode']]
     ]))
 
     

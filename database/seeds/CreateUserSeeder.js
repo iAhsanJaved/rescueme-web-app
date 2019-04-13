@@ -14,7 +14,7 @@
 const uuidv4 = require('uuid/v4');
 const User = use('App/Models/User')
 const Role = use('App/Models/Role')
-const Location = use('App/Models/Location')
+const Node = use('App/Models/Node')
 
 class CreateUserSeeder {
   async run () {
@@ -58,19 +58,14 @@ class CreateUserSeeder {
     });
 
 
-    const locJeddah = await Location.create({
+    const n1 = await Node.create({
+      id: uuidv4(),
+      key: 'abcdef',
+      name: 'AUMC CS Dep.',
+      address: 'Khan Center Multan Cantt.',
       latitude: -0.62616,
       longitude: -55.6666,
-      google_map_url: 'http://maps.google.com',
     })
-    
-    const rhdLoc = await Location.create({
-      latitude: -0.62616,
-      longitude: -55.6666,
-      google_map_url: 'http://maps.google.com',
-    })
-    
-  
     
   }
 }

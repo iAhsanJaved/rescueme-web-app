@@ -6,7 +6,7 @@ const Role = use('App/Models/Role')
 
 class UserController {
     
-    async index ({ view, auth }) {
+    async index ({ view }) {
         // Fetch all Users with their Role
         const users = await User.query().with('role').fetch()
         
@@ -16,7 +16,7 @@ class UserController {
         });
     }
   
-    async create({ view, auth }) {
+    async create({ view }) {
         // Fetch all Roles
         const roles = await Role.all()
             
@@ -26,7 +26,7 @@ class UserController {
         });
     }
 
-    async store({ response, request, session, auth }) {
+    async store({ response, request, session }) {
         // Request Data
         const data = request.only([
             'username', 'email', 'password', 'name', 
@@ -43,7 +43,7 @@ class UserController {
 		return response.redirect('back');
     }
 
-    async show({ params, view, auth, request }) {
+    async show({ params, view }) {
         // Find User
         const user = await User.findOrFail(params.id)
         
@@ -56,7 +56,7 @@ class UserController {
         });
     }
 
-    async edit({ params, view, auth, request }) {
+    async edit({ params, view }) {
         // Find User
         const user = await User.findOrFail(params.id)
         // Fetch all Roles
@@ -69,7 +69,7 @@ class UserController {
         });
     }
 
-    async update({ params, response, request, session, auth }) {
+    async update({ params, response, request, session }) {
         // Find User
         const user = await User.findOrFail(params.id)
         
@@ -88,7 +88,7 @@ class UserController {
 		return response.redirect('back');
     }
 
-    async destroy({ params, response, session, auth, request, view }) {
+    async destroy({ params, response, session }) {
         // Find User
         const user = await User.findOrFail(params.id);
         
@@ -100,7 +100,7 @@ class UserController {
 		return response.redirect('back');
     }
     
-    async changePassword({ params, view, auth, request }) {
+    async changePassword({ params, view }) {
         // Find User
         const user = await User.findOrFail(params.id);
 
