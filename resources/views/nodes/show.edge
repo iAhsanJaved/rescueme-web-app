@@ -65,6 +65,13 @@
                     <input class="form-control"  type="text" value="{{ node.longitude }}" disabled>
                   </div>
               </div>
+
+              <div class="form-group row">
+                <label class="col-md-3 col-form-label form-control-label"></label>
+                  <div class="col-md-8">
+                    <div id="map-canvas" data-lat="27.7172453" data-lng="85.3239605" style="height: 360px; width:100%;"></div>
+                  </div>
+              </div>
               
               <div class="form-group row">
                 <label class="col-md-3 col-form-label form-control-label">Created On</label>
@@ -88,4 +95,24 @@
 
     @include('layouts.footers.auth')
   </div>
+@endsection
+
+@section('script')
+  @super
+  <script>
+    // Initialize and add the map
+    function initMap() {
+      // The location of Uluru
+      var uluru = {lat: -25.344, lng: 131.036};
+      // The map, centered at Uluru
+      var map = new google.maps.Map(
+          document.getElementById('map'), {zoom: 4, center: uluru});
+      // The marker, positioned at Uluru
+      var marker = new google.maps.Marker({position: uluru, map: map});
+    }
+        </script>
+  <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD4kM6UjTgDYJ5Nlqzar8oEuQrpgPUNUv8&callback=initMap">
+  </script>
+
 @endsection

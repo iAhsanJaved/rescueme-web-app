@@ -1,5 +1,6 @@
 'use strict'
 const uuidv4 = require('uuid/v4');
+const randomstring = require('randomstring');
 
 const Node = use('App/Models/Node')
 
@@ -27,7 +28,7 @@ class NodeController {
 
         // Generate UUID
         data.id = uuidv4()
-        data.key = "abcdef"
+        data.key = randomstring.generate(14);
 
         // Create Node
         await Node.create(data)
