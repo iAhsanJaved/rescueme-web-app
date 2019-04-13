@@ -59,6 +59,11 @@ Route.group(() => {
     Route.get('users/:id/changePassword', 'UserController.changePassword').as('users.changePassword')
     Route.put('users/:id/updatePassword', 'UserController.updatePassword').validator('UpdateUserPassword').as('users.updatePassword')
 
+    Route.resource('emergencyTypes', 'EmergencyTypeController')
+    .validator(new Map([
+        [['emergencyTypes.store'], ['StoreEmergencyType']],
+        [['emergencyTypes.update'], ['UpdateEmergencyType']]
+    ]))
 
 }).middleware(['admin'])
 

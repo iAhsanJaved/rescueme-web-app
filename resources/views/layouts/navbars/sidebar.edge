@@ -75,15 +75,7 @@
             Dashboard
           </a>
         </li>
-        {{-- RoleID: 1.Admin --}}
-        @if(auth.user.role_id == 1)
-        <li class="nav-item">
-          <a class="nav-link {{ activeRoute(request.url(), 'users') }}" href="{{ route('users.index') }}">
-            <i class="ni ni-single-02 text-yellow"></i> 
-            Users
-          </a>
-        </li>
-        @endif
+       
 
       {{-- RoleID: 1.Admin, 2.Operator --}}
       @if(auth.user.role_id == 1 || auth.user.role_id == 2)
@@ -94,6 +86,23 @@
         </a>
       </li>
       @endif
+
+       {{-- RoleID: 1.Admin --}}
+       @if(auth.user.role_id == 1)
+       <li class="nav-item">
+         <a class="nav-link {{ activeRoute(request.url(), 'users') }}" href="{{ route('users.index') }}">
+           <i class="ni ni-single-02 text-yellow"></i> 
+           Users
+         </a>
+       </li>
+
+       <li class="nav-item">
+        <a class="nav-link {{ activeRoute(request.url(), 'emergencyTypes') }}" href="{{ route('emergencyTypes.index') }}">
+          <i class="ni ni-sound-wave text-purple"></i> 
+          Emergency Types
+        </a>
+      </li>
+       @endif
     </ul>
       <!-- Divider -->
       <hr class="my-3">

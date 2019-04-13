@@ -15,6 +15,8 @@ const uuidv4 = require('uuid/v4');
 const User = use('App/Models/User')
 const Role = use('App/Models/Role')
 const Node = use('App/Models/Node')
+const EmergencyType = use('App/Models/EmergencyType')
+const EmergencyAlert = use('App/Models/EmergencyAlert')
 
 class CreateUserSeeder {
   async run () {
@@ -66,6 +68,22 @@ class CreateUserSeeder {
       latitude: -0.62616,
       longitude: -55.6666,
     })
+    
+    const fall = await EmergencyType.create({
+      id: 1,
+      name: 'Human Fall'
+    })
+
+    const fire = await EmergencyType.create({
+      id: 2,
+      name: 'Fire'
+    })
+
+    const car_accident = await EmergencyType.create({
+      id: 3,
+      name: 'Car Accident'
+    })
+
     
   }
 }
