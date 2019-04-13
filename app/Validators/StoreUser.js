@@ -11,7 +11,6 @@ class StoreUser {
       'gender': 'required|number',
       'status': 'required|number',
       'role_id': 'required|number',
-      'organization_id': 'required'
     }
   }
 
@@ -20,7 +19,6 @@ class StoreUser {
       'required': 'Please provide a {{ field }}.',
       'email': 'Please provide a valid email.',
       'role_id.required': 'Please select a user role.',
-      'organization_id.required': 'Please select the organiation.',
       'unique': 'This {{ field }} is not available.',
       'password_confirmation.same': 'Please provide the same password.',
       'max': 'The {{ field }} must not exceed than {{ argument.0 }} characters.',

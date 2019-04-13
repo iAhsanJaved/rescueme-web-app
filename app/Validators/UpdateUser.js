@@ -10,7 +10,6 @@ class UpdateUser {
       'gender': 'required|number',
       'status': 'required|number',
       'role_id': 'required|number',
-      'organization_id': 'required'
     }
   }
 
@@ -19,7 +18,6 @@ class UpdateUser {
       'required': 'Please provide a {{ field }}.',
       'email': 'Please provide a valid email.',
       'role_id.required': 'Please select a user role.',
-      'organization_id.required': 'Please select the organiation.',
       'unique': 'This {{ field }} is not available.',
       'max': 'The {{ field }} must not exceed than {{ argument.0 }} characters.',
       'number': 'The {{ field }} value must be a number.'
