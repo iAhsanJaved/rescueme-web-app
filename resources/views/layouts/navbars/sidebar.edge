@@ -75,20 +75,16 @@
             Dashboard
           </a>
         </li>
-       
 
-      {{-- RoleID: 1.Admin, 2.Operator --}}
-      @if(auth.user.role_id == 1 || auth.user.role_id == 2)
-      <li class="nav-item">
+       {{-- RoleID: 1.Admin --}}
+       @if(auth.user.role_id == 1)
+       <li class="nav-item">
         <a class="nav-link {{ activeRoute(request.url(), 'nodes') }}" href="{{ route('nodes.index') }}">
           <i class="ni ni-atom text-green"></i> 
           Nodes
         </a>
       </li>
-      @endif
 
-       {{-- RoleID: 1.Admin --}}
-       @if(auth.user.role_id == 1)
        <li class="nav-item">
          <a class="nav-link {{ activeRoute(request.url(), 'users') }}" href="{{ route('users.index') }}">
            <i class="ni ni-single-02 text-yellow"></i> 
@@ -102,7 +98,18 @@
           Emergency Types
         </a>
       </li>
-       @endif
+      @endif
+      
+      {{-- RoleID: 1.Admin, 2.Operator --}}
+      @if(auth.user.role_id == 1 || auth.user.role_id == 2)
+      <li class="nav-item">
+        <a class="nav-link {{ activeRoute(request.url(), 'emergencyAlerts') }}" href="{{ route('emergencyAlerts.index') }}">
+          <i class="ni ni-bell-55 text-red"></i> 
+          Emergency Alerts
+        </a>
+      </li>
+      @endif
+
     </ul>
       <!-- Divider -->
       <hr class="my-3">

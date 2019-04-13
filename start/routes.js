@@ -46,6 +46,11 @@ Route.group(() => {
 
     
 
+    Route.get('emergencyAlerts', 'EmergencyAlertController.index').as('emergencyAlerts.index')
+    Route.get('emergencyAlerts/:id', 'EmergencyAlertController.show').as('emergencyAlerts.show')
+    Route.delete('emergencyAlerts/:id', 'EmergencyAlertController.destroy').as('emergencyAlerts.destroy')
+
+
 }).middleware(['admin_operator'])
 
 
@@ -59,6 +64,8 @@ Route.group(() => {
     Route.get('users/:id/changePassword', 'UserController.changePassword').as('users.changePassword')
     Route.put('users/:id/updatePassword', 'UserController.updatePassword').validator('UpdateUserPassword').as('users.updatePassword')
 
+    
+    
     Route.resource('emergencyTypes', 'EmergencyTypeController')
     .validator(new Map([
         [['emergencyTypes.store'], ['StoreEmergencyType']],

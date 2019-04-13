@@ -1,9 +1,9 @@
 @layout('layouts.app')
 
 @section('content')
-  @set('title', 'View Node')
-  @set('mainTitle', 'Nodes')
-  @set('subtitle', 'View Node')
+  @set('title', 'View Emergency Alert ')
+  @set('mainTitle', 'Emergency Alert s')
+  @set('subtitle', 'View Emergency Alert ')
   @include('dashboard.partials.header')
 
   <div class="container-fluid mt--7">
@@ -16,7 +16,7 @@
                 <h3 class="mb-0">{{ subtitle }}</h3>
               </div>
               <div class="col-4 text-right">
-                <a href="{{ route('nodes.index') }}" class="btn btn-sm btn-primary">Back to list</a>
+                <a href="{{ route('emergencyAlerts.index') }}" class="btn btn-sm btn-primary">Back to list</a>
               </div>
             </div>
           </div>
@@ -25,44 +25,51 @@
             <div class="pl-lg-4">
               
               <div class="form-group row">
-                <label class="col-md-3 col-form-label form-control-label">ID</label>
+                <label class="col-md-3 col-form-label form-control-label">Image</label>
                   <div class="col-md-8">
-                    <input class="form-control"  type="text" value="{{ node.id }}" disabled>
-                  </div>
-              </div>
-              
-              <div class="form-group row">
-                <label class="col-md-3 col-form-label form-control-label">Key</label>
-                  <div class="col-md-8">
-                    <input class="form-control"  type="text" value="{{ node.key }}" disabled>
+                    <img style="width:100%;" src="{{ emergencyAlert.image }}" /> 
                   </div>
               </div>
 
               <div class="form-group row">
-                <label class="col-md-3 col-form-label form-control-label">Name</label>
+                <label class="col-md-3 col-form-label form-control-label">ID</label>
                   <div class="col-md-8">
-                    <input class="form-control"  type="text" value="{{ node.name }}" disabled>
+                    <input class="form-control"  type="text" value="{{ emergencyAlert.id }}" disabled>
+                  </div>
+              </div>
+
+              <div class="form-group row">
+                <label class="col-md-3 col-form-label form-control-label">Emergency Type</label>
+                  <div class="col-md-8">
+                    <input class="form-control"  type="text" value="{{ emergencyAlert.emergencyType.name }}" disabled>
+                  </div>
+              </div>
+              
+              <div class="form-group row">
+                <label class="col-md-3 col-form-label form-control-label">Node</label>
+                  <div class="col-md-8">
+                    <input class="form-control"  type="text" value="{{ emergencyAlert.node.name }}" disabled>
                   </div>
               </div>
 
               <div class="form-group row">
                 <label class="col-md-3 col-form-label form-control-label">Address</label>
                   <div class="col-md-8">
-                    <input class="form-control"  type="text" value="{{ node.address }}" disabled>
+                    <input class="form-control"  type="text" value="{{ emergencyAlert.node.address }}" disabled>
                   </div>
               </div>
 
               <div class="form-group row">
                 <label class="col-md-3 col-form-label form-control-label">Latitude</label>
                   <div class="col-md-8">
-                    <input class="form-control"  type="text" value="{{ node.latitude }}" disabled>
+                    <input class="form-control"  type="text" value="{{ emergencyAlert.node.latitude }}" disabled>
                   </div>
               </div>
 
               <div class="form-group row">
                 <label class="col-md-3 col-form-label form-control-label">Longitude</label>
                   <div class="col-md-8">
-                    <input class="form-control"  type="text" value="{{ node.longitude }}" disabled>
+                    <input class="form-control"  type="text" value="{{ emergencyAlert.node.longitude }}" disabled>
                   </div>
               </div>
 
@@ -76,14 +83,14 @@
               <div class="form-group row">
                 <label class="col-md-3 col-form-label form-control-label">Created On</label>
                   <div class="col-md-8">
-                    <input class="form-control"  type="text" value="{{ node.created_at }}" disabled>
+                    <input class="form-control"  type="text" value="{{ emergencyAlert.created_at }}" disabled>
                   </div>
               </div>
 
               <div class="form-group row">
                 <label class="col-md-3 col-form-label form-control-label">Modified On</label>
                   <div class="col-md-8">
-                    <input class="form-control"  type="text" value="{{ node.updated_at }}" disabled>
+                    <input class="form-control"  type="text" value="{{ emergencyAlert.updated_at }}" disabled>
                   </div>
               </div>
 
@@ -112,7 +119,7 @@
     }
         </script>
   <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD4kM6UjTgDYJ5Nlqzar8oEuQrpgPUNUv8&callback=initMap">
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDso20idNi9UXhBFMxcdpWhGgnjDf3xTzQ&callback=initMap">
   </script>
 
 @endsection
