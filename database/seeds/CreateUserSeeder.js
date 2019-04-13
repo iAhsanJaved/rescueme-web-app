@@ -15,33 +15,26 @@ const uuidv4 = require('uuid/v4');
 const User = use('App/Models/User')
 const Role = use('App/Models/Role')
 const Location = use('App/Models/Location')
-const Device = use('App/Models/Device')
 
 class CreateUserSeeder {
   async run () {
    
-    const superAdmin = await Role.create({
-      id: 1,
-      slug: 'super_admin',
-      name: 'Super Admin',
-      description: 'Super Admin....'
-    });
-
-    const tenantAdmin = await Role.create({
-      id: 2,
-      slug: 'tenant_admin',
-      name: 'Tenant Admin',
-      description: 'Tenant Admin....'
-    });
-
     const admin = await Role.create({
-      id: 3,
+      id: 1,
       slug: 'admin',
       name: 'Admin',
       description: 'Admin....'
     });
 
-    const superUser = await User.create({
+    const operator = await Role.create({
+      id: 2,
+      slug: 'operator',
+      name: 'Operator',
+      description: 'Operator'
+    });
+
+   
+    const adminUser = await User.create({
       id: uuidv4(),
       username: 'iahsanjaved',
       email: 'i@test.com',
@@ -49,11 +42,11 @@ class CreateUserSeeder {
       name: 'Ahsan Javed',
       status: 1,
       gender: 1,
-      role_id: superAdmin.id,
+      role_id: admin.id,
     });
 
 
-    const tenantUser = await User.create({
+    const operatorUser = await User.create({
       id: uuidv4(),
       username: 'fawad',
       email: 'f@test.com',
@@ -61,21 +54,9 @@ class CreateUserSeeder {
       name: 'Fawad Kareem',
       status: 1,
       gender: 1,
-      role_id: tenantAdmin.id,
+      role_id: operator.id,
     });
 
-
-
-    const adminUser = await User.create({
-      id: uuidv4(),
-      username: 'junaid',
-      email: 'j@test.com',
-      password: 'helloworld!',
-      name: 'Junaid Raja',
-      status: 1,    
-      gender: 0,  
-      role_id: admin.id,
-    });
 
     const locJeddah = await Location.create({
       latitude: -0.62616,
@@ -89,11 +70,6 @@ class CreateUserSeeder {
       google_map_url: 'http://maps.google.com',
     })
     
-    const device = await Device.create({
-      id: uuidv4(),
-      status: 1,
-      location_id: locJeddah.id,
-    })
   
     
   }

@@ -19186,7 +19186,7 @@ textarea[resize='horizontal']
 
     content: '';
 
-    border-left: 2px solid #5e72e4;
+    border-left: 2px solid #ff6565;
 }
 .navbar-vertical .navbar-nav .nav-link > i
 {
@@ -19581,7 +19581,7 @@ textarea[resize='horizontal']
         left: 0;
 
         border-bottom: 0; 
-        border-left: 2px solid #5e72e4;
+        border-left: 2px solid #ff6565;
     }
     .navbar-vertical.navbar-expand-md .navbar-nav .nav .nav-link
     {

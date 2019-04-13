@@ -4,7 +4,7 @@
 /** @typedef {import('@adonisjs/framework/src/View')} View */
 const GE = require('@adonisjs/generic-exceptions')
 
-class SuperTenant {
+class AdminOperator {
   /**
    * @param {object} ctx
    * @param {Request} ctx.request
@@ -20,7 +20,7 @@ class SuperTenant {
 
     if(loggedIn) {
       const user_role = await auth.user.role().fetch();
-      if(user_role.slug != 'super_admin' && user_role.slug != 'tenant_admin' ) {
+      if(user_role.slug != 'admin' && user_role.slug != 'operator' ) {
         throw new GE.HttpException(`User cannot access the route ${request.method()} ${request.url()}`, 403, 'E_UNAUTHORIZED')              
       }
     } else {
@@ -31,4 +31,4 @@ class SuperTenant {
   }
 }
 
-module.exports = SuperTenant
+module.exports = AdminOperator

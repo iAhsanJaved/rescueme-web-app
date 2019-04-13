@@ -37,57 +37,28 @@ Route.group(() => {
 
 Route.group(() => {
 
-    Route.get('users', 'UserController.index').as('users.index')
-    Route.get('users/create', 'UserController.create').as('users.create')
-    Route.post('users', 'UserController.store').validator('StoreUser').as('users.store')
-    Route.get('users/:id', 'UserController.show').as('users.show')
-    Route.delete('users/:id', 'UserController.destroy').as('users.destroy')
-    Route.put('users/:id', 'UserController.update').validator('UpdateUser').as('users.update')
-    Route.patch('users/:id', 'UserController.update')
-    Route.get('users/:id/edit', 'UserController.edit').as('users.edit')
-    Route.get('users/:id/changePassword', 'UserController.changePassword').as('users.changePassword')
-    Route.put('users/:id/updatePassword', 'UserController.updatePassword').validator('UpdateUserPassword').as('users.updatePassword')
-
+    
     Route.resource('locations', 'LocationController')
     .validator(new Map([
         [['locations.store'], ['StoreLocation']],
         [['locations.update'], ['UpdateLocation']]
     ]))
 
-    Route.resource('devices', 'DeviceController')
-    .validator(new Map([
-        [['devices.store'], ['StoreDevice']],
-        [['devices.update'], ['UpdateDevice']]
-    ]))
+    
 
-    Route.resource('questions', 'SurveyQuestionController')
-    .validator(new Map([
-        [['questions.store'], ['StoreSurveyQuestion']],
-        [['questions.update'], ['UpdateSurveyQuestion']]
-    ]))
-
-    Route.resource('advertisements', 'AdvertisementController')
-    .validator(new Map([
-        [['advertisements.store'], ['StoreAdvertisement']],
-        [['advertisements.update'], ['UpdateAdvertisement']]
-    ]))
-
-}).middleware(['super_tenant'])
+}).middleware(['admin_operator'])
 
 
 Route.group(() => {
     
-    Route.resource('languages', 'LanguageController')
+    Route.resource('users', 'UserController')
     .validator(new Map([
-        [['languages.store'], ['StoreLanguage']],
-        [['languages.update'], ['UpdateLanguage']]
+        [['users.store'], ['StoreUser']],
+        [['users.update'], ['UpdateUser']]
     ]))
+    Route.get('users/:id/changePassword', 'UserController.changePassword').as('users.changePassword')
+    Route.put('users/:id/updatePassword', 'UserController.updatePassword').validator('UpdateUserPassword').as('users.updatePassword')
 
-    Route.resource('organizations', 'OrganizationController')
-    .validator(new Map([
-        [['organizations.store'], ['StoreOrganization']],
-        [['organizations.update'], ['UpdateOrganization']]
-    ]))
 
-}).middleware(['superadmin'])
+}).middleware(['admin'])
 
