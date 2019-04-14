@@ -46,6 +46,22 @@ class EmergencyAlertController {
 		return response.redirect('back');
     }
 
+    async store({ response, request }) {
+        // Request Data
+        const data = request.only([
+            'image', 'node_id','emergency_type_id'
+        ])
+
+
+        // Create EmergencyAlert
+        await EmergencyAlert.create(data)
+
+        // Response
+		return response.json({ 
+            message: 'Emergency Alert has been posted.',
+            fail: false 
+        })
+    }
 }
 
 module.exports = EmergencyAlertController

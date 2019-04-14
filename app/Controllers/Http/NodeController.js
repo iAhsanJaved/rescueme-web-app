@@ -90,6 +90,27 @@ class NodeController {
 		session.flash({ message: 'Node has been deleted.' });
 		return response.redirect('back');
     }
+
+    async verify({ request, response }) {
+        // Find Node
+        const node = await Node.findOrFail(request.input('id'))
+        
+        let result;
+        if(request.input('key') == node.key) {
+            result = {
+                message: 'Node id and key are correct.',
+                fail: false 
+            }
+        } else {
+            result = {
+                message: 'Invalid node key.',
+                fail: true 
+            }
+        }
+
+        // Response
+        return response.json(result)
+    }
 }
 
 module.exports = NodeController

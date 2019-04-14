@@ -32,6 +32,7 @@ Route.group(() => {
     Route.get('dashboard', 'DashboardController.index').as('dashboard.index')
     Route.get('profile', 'ProfileController.index').as('profile.index')
 
+
 }).middleware(['auth'])
 
 
@@ -73,4 +74,11 @@ Route.group(() => {
     ]))
 
 }).middleware(['admin'])
+
+Route.group(() => {
+    // http://127.0.0.1:3333/api/nodes/verify
+    Route.get('/api/nodes/verify', 'NodeController.verify').as('nodes.verify')
+    Route.post('/api/emergencyAlerts/store', 'EmergencyAlertController.store').as('emergencyAlerts.store')
+    
+})
 
