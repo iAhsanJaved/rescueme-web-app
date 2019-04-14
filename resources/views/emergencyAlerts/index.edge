@@ -50,7 +50,7 @@
               <tbody>
                 @each(emergencyAlert in emergencyAlerts)
                 <tr>
-                  <td><img style="height:144px; width:256" src="{{ emergencyAlert.image }}" /></td>
+                  <td><img style="height:144px; width:256" src="{{ 'data:image/jpeg;base64,' +  emergencyAlert.image }}" /></td>
                   <td>{{ emergencyAlert.emergencyType.name }}</td>
                   <td>{{ emergencyAlert.node.name }}</td>
                   <td>{{ emergencyAlert.created_at }}</td>

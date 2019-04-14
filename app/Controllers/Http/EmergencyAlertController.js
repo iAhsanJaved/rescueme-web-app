@@ -52,12 +52,11 @@ class EmergencyAlertController {
             'image', 'node_id','emergency_type_id'
         ])
 
-
         // Create EmergencyAlert
         await EmergencyAlert.create(data)
 
         // Response
-		return response.json({ 
+		return response.status(201).json({ 
             message: 'Emergency Alert has been posted.',
             fail: false 
         })

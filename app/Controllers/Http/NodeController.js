@@ -103,13 +103,13 @@ class NodeController {
             }
         } else {
             result = {
-                message: 'Invalid node key.',
+                message: 'Node id and key are invalid.',
                 fail: true 
             }
         }
 
         // Response
-        return response.json(result)
+        return response.status(200).json(result)
     }
 }
 

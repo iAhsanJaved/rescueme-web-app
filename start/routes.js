@@ -77,8 +77,8 @@ Route.group(() => {
 
 Route.group(() => {
     // http://127.0.0.1:3333/api/nodes/verify
-    Route.get('/api/nodes/verify', 'NodeController.verify').as('nodes.verify')
-    Route.post('/api/emergencyAlerts/store', 'EmergencyAlertController.store').as('emergencyAlerts.store')
+    Route.get('nodes/verify', 'NodeController.verify')
+    Route.post('emergencyAlerts/store', 'EmergencyAlertController.store')
     
-})
+}).prefix('api/v1')
 
